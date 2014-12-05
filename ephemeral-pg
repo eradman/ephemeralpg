@@ -94,7 +94,8 @@ stop)
 	rm -rf $TD
 	;;
 selftest)
-	export TMPDIR=$(mktemp -td ephemeral_pg_selftest.XXXXXX)
+	TMPDIR=$(mktemp -d ${TMPDIR:-/tmp}/ephemeral-pg-selftest.XXXXXX)
+	export TMPDIR
 	echo "Using `pg_ctl --version`"
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
