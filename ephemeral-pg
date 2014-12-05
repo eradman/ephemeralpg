@@ -15,13 +15,18 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 usage() {
+	prog=$(basename $0)
 	cat <<-HELP
-	Quickly spin up a temporary Postgresql database
-	Usage:
-	  $(basename $0) initdb|start|stop [-t timeout] [-d data_dir]
+	Standard usage:
+          # spin up temporary PostgreSQL database (avilable for 30 seconds)
+	  uri=\$(./$prog -t 30 start)
+	  psql \$uri -f my.sql
 
-	- The default timeout is 60 seconds
-	- Using `pg_ctl --version`
+	Available options:
+	  $prog initdb
+	  $prog start -t timeout
+	  $prog stop -t timeout -d data_dir
+	  $prog selftest
 	HELP
 exit 2
 }
@@ -35,12 +40,9 @@ set -- $args
 while [ $# -gt 1 ]; do
 	case "$1"
 	in
-		-t)
-		    TIMEOUT="$2"; shift; shift;;
-		-d)
-		    TD="$2"; shift; shift;;
-		--)
-		    shift; break;;
+		-t) TIMEOUT="$2"; shift; shift;;
+		-d) TD="$2"; shift; shift;;
+		--) shift; break;;
 	esac
 done
 [ $# -ne 1 ] && usage
@@ -84,12 +86,24 @@ start)
 	nohup $0 initdb > /dev/null &
 	# shutting down takes nearly 1.3 seconds
 	# return control so the calling process can use the connection
-	nohup time $0 -t ${TIMEOUT:-60} -d $TD stop > /dev/null &
+	nohup time $0 -t $TIMEOUT -d $TD stop > /dev/null &
 	;;
 stop)
 	sleep $TIMEOUT
 	pg_ctl -D $TD/db stop -m immediate || true
 	rm -rf $TD
+	;;
+selftest)
+	export TMPDIR=$(mktemp -td ephemeral_pg_selftest.XXXXXX)
+	echo "Using `pg_ctl --version`"
+	printf "Running: "
+	printf "initdb "; dir=$($0 initdb)
+	printf "start " ; uri=$($0 -t 3 start)
+	printf "psql "  ; [ "$(psql -At -c 'select 5' $uri)" == "5" ]
+	printf "stop "  ; sleep 10
+	printf "verify "; ! [ -d dir ]
+	echo; echo "OK"
+	rm -rf $TMPDIR
 	;;
 *)
 	usage
