@@ -80,8 +80,10 @@ start)
 		sleep 0.1
 		PGHOST=$TD/socket createdb -E UNICODE ephemeral 2> /dev/null && break
 	done
-	uri="postgresql:///ephemeral?host=$TD/socket"
-	echo $uri
+	# uri format documented at
+	# http://www.postgresql.org/docs/9.4/static/libpq-connect.html
+	uri="postgresql://$(echo $TD/socket | sed 's:/:%2F:g')/ephemeral"
+	echo -n $uri
 	# background initdb cuts startup by 3.8 seconds
 	nohup $0 initdb > /dev/null &
 	# shutting down takes nearly 1.3 seconds
@@ -95,6 +97,7 @@ stop)
 	;;
 selftest)
 	TMPDIR=$(mktemp -d ${TMPDIR:-/tmp}/ephemeral-pg-selftest.XXXXXX)
+	trap "rm -rf $TMPDIR" EXIT
 	export TMPDIR
 	echo "Using `pg_ctl --version`"
 	printf "Running: "
@@ -104,7 +107,6 @@ selftest)
 	printf "stop "  ; sleep 10
 	printf "verify "; ! [ -d dir ]
 	echo; echo "OK"
-	rm -rf $TMPDIR
 	;;
 *)
 	usage
