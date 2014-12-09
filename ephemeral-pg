@@ -49,8 +49,7 @@ done
 
 case $1 in
 initdb)
-	TD="$(mktemp -d ${TMPDIR:-/tmp}/ephemeral-pg.XXXXXX)"
-	PG_CONF=$TD/db/postgresql.conf
+	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeral-pg.XXXXXX)"
 	# disabling fsync cuts time down by .5 seconds
 	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
 	mkdir $TD/socket
@@ -63,11 +62,9 @@ initdb)
 	;;
 start)
 	# Find a temporary database directory owned by the current user
-	if [ -z $TD ]; then
-		for d in $(ls -d ${TMPDIR:-/tmp}/ephemeral-pg.* 2> /dev/null); do
-			test -O $d/NEW && { TD=$d; break; }
-		done
-	fi
+	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeral-pg.* 2> /dev/null); do
+		test -O $d/NEW && { TD=$d; break; }
+	done
 	[ -z $TD ] && TD=$($0 initdb)
 	rm $TD/NEW
 	# disabling fsync cuts startup by 0.8 seconds
@@ -96,9 +93,8 @@ stop)
 	rm -rf $TD
 	;;
 selftest)
-	TMPDIR=$(mktemp -d ${TMPDIR:-/tmp}/ephemeral-pg-selftest.XXXXXX)
-	trap "rm -rf $TMPDIR" EXIT
-	export TMPDIR
+	export SYSTMP=$(mktemp -d /tmp/ephemeral-pg-selftest.XXXXXX)
+	trap "rm -rf $SYSTMP" EXIT
 	echo "Using `pg_ctl --version`"
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
