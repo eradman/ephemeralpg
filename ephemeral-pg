@@ -86,7 +86,7 @@ start)
 	nohup $0 initdb > /dev/null &
 	# shutting down takes nearly 1.3 seconds
 	# return control so the calling process can use the connection
-	nohup time $0 -t $TIMEOUT -d $TD stop > /dev/null &
+	nohup $0 -t $TIMEOUT -d $TD stop > /dev/null &
 	;;
 stop)
 	sleep $TIMEOUT
