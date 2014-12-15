@@ -3,9 +3,9 @@ ephemeral-pg
 
 Quickly spin up a temporary Postgres test databases.
 
-`ephemeral-pg` uses several tricks to reduce the wait time for a new database to
-less than one second by initializing a database in the background that is
-recycled during subsequent invocations. Additional optimizations include:
+`pg_tmp` uses several tricks to reduce the wait time for a new database to less
+than one second by initializing a database in the background that is recycled
+during subsequent invocations. Additional optimizations include:
 
 * Running with fsync=off
 * Spin to discover when the database is available
@@ -18,7 +18,7 @@ Example:
 --------
 
     #!/bin/sh
-    uri=$(./ephemeral-pg -t 30 start)
+    uri=$(pg_temp -t 30)
     echo "Using $uri"
     psql $uri -c 'select now()'
 

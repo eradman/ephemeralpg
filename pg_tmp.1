@@ -1,0 +1,23 @@
+.Dd December 15, 2014
+.Dt PG_TMP 1
+.Os
+.Sh NAME
+.Nm pg_tmp
+.Nd spin up temporary PostgreSQL database
+.Sh SYNOPSIS
+.Nm pg_tmp
+.Fl t
+.Ar expiration
+.Sh DESCRIPTION
+The
+.Nm
+utility uses several tricks to reduce the wait time for a new database to less
+than one second by initializing a database in the background that is recycled
+during subsequent invocations.
+.Sh EXAMPLES
+Spin up a temporary database, run a query.
+Will be shutdown after 30 seconds
+.Bd -literal -offset indent
+uri=$(pg_tmp -t 30)
+psql $uri -f my.sql
+.Ed

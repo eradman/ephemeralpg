@@ -16,19 +16,8 @@
 
 usage() {
 	prog=$(basename $0)
-	cat <<-HELP
-	Standard usage:
-          # spin up temporary PostgreSQL database (avilable for 30 seconds)
-	  uri=\$(./$prog -t 30 start)
-	  psql \$uri -f my.sql
-
-	Available options:
-	  $prog initdb
-	  $prog start -t timeout
-	  $prog stop -t timeout -d data_dir
-	  $prog selftest
-	HELP
-exit 2
+	echo "usage: $prog -t expiration"
+	exit 2
 }
 
 trap 'printf "$0: exit code $? on line $LINENO\n"; exit 1' ERR \
@@ -50,7 +39,7 @@ done
 
 case $1 in
 initdb)
-	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeral-pg.XXXXXX)"
+	TD="$(mktemp -d ${SYSTMP:-/tmp}/pg_tmp.XXXXXX)"
 	# disabling fsync cuts time down by .5 seconds
 	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
 	mkdir $TD/socket
@@ -61,9 +50,9 @@ initdb)
 	touch $TD/NEW
 	echo $TD
 	;;
-start)
+start|--)
 	# Find a temporary database directory owned by the current user
-	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeral-pg.* 2> /dev/null); do
+	for d in $(ls -d ${SYSTMP:-/tmp}/pg_tmp.* 2> /dev/null); do
 		test -O $d/NEW && { TD=$d; break; }
 	done
 	[ -z $TD ] && TD=$($0 initdb)
@@ -94,9 +83,8 @@ stop)
 	rm -rf $TD
 	;;
 selftest)
-	export SYSTMP=$(mktemp -d /tmp/ephemeral-pg-selftest.XXXXXX)
+	export SYSTMP=$(mktemp -d /tmp/pg_tmp-selftest.XXXXXX)
 	trap "rm -rf $SYSTMP" EXIT
-	echo "Using `pg_ctl --version`"
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
 	printf "start " ; uri=$($0 -t 3 start)
