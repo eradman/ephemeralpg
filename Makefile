@@ -10,9 +10,6 @@ regress: pg_tmp
 	@/bin/echo "Using `pg_ctl --version`"
 	@./pg_tmp.sh selftest
 
-distclean: clean
-	rm -f Makefile
-
 install:
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
@@ -21,5 +18,6 @@ install:
 
 clean:
 	rm pg_tmp
+	rm -rf /tmp/pg_tmp-selftest*
 
 .PHONY: clean distclean

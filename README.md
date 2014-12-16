@@ -1,5 +1,5 @@
-ephemeral-pg
-============
+ephemeralpg
+===========
 
 Quickly spin up a temporary Postgres test databases.
 
@@ -14,16 +14,22 @@ during subsequent invocations. Additional optimizations include:
 The temporary database will be automatically garbage-collected after the number
 of seconds specified by the `-t` option.
 
-Example:
---------
+Example
+-------
 
     #!/bin/sh
     uri=$(pg_temp -t 30)
     echo "Using $uri"
     psql $uri -c 'select now()'
 
+Installation
+------------
+
+    make install
+
 Requirements
 ------------
 
 * PostgreSQL 9.3+
+
 
