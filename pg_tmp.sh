@@ -43,9 +43,11 @@ initdb)
 	# disabling fsync cuts time down by .5 seconds
 	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
 	mkdir $TD/socket
+	# drop shared_buffers to allow numerous concurrent instances
 	cat <<-EOF >> $TD/db/postgresql.conf
-	unix_socket_directories='$TD/socket'
-	external_pid_file='$TD/postmaster.pid'
+	    unix_socket_directories='$TD/socket'
+	    listen_addresses=''
+	    shared_buffers=12MB
 	EOF
 	touch $TD/NEW
 	echo $TD
@@ -58,10 +60,7 @@ start|--)
 	[ -z $TD ] && TD=$($0 initdb)
 	rm $TD/NEW
 	# disabling fsync cuts startup by .8 seconds
-	# drop shared_buffers to allow numerous concurrent instances
-	pg_ctl -s -o \
-	    "-c fsync=off -c listen_addresses='' -c shared_buffers=12MB" \
-	    -D $TD/db -l $TD/log start
+	pg_ctl -o "-F" -s -D $TD/db -l $TD/log start
 	# .4 seconds faster than start -w
 	for n in 1 2 3 4 5; do
 		sleep 0.1
