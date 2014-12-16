@@ -57,20 +57,20 @@ start|--)
 	done
 	[ -z $TD ] && TD=$($0 initdb)
 	rm $TD/NEW
-	# disabling fsync cuts startup by 0.8 seconds
+	# disabling fsync cuts startup by .8 seconds
 	# drop shared_buffers to allow numerous concurrent instances
 	pg_ctl -s -o \
 	    "-c fsync=off -c listen_addresses='' -c shared_buffers=12MB" \
 	    -D $TD/db -l $TD/log start
 	# .4 seconds faster than start -w
-	for n in 1 2 3 4 5 6; do
+	for n in 1 2 3 4 5; do
 		sleep 0.1
 		PGHOST=$TD/socket createdb -E UNICODE ephemeral 2> /dev/null && break
 	done
 	# uri format documented at
 	# http://www.postgresql.org/docs/9.4/static/libpq-connect.html
-	uri="postgresql://$(echo $TD/socket | sed 's:/:%2F:g')/ephemeral"
-	echo -n "$uri"
+	url="postgresql://$(echo $TD/socket | sed 's:/:%2F:g')/ephemeral"
+	echo -n "$url"
 	# background initdb cuts startup by 3.8 seconds
 	nohup $0 initdb > /dev/null &
 	# shutting down takes nearly 1.3 seconds
@@ -87,8 +87,8 @@ selftest)
 	trap "rm -rf $SYSTMP" EXIT
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
-	printf "start " ; uri=$($0 -t 3 start)
-	printf "psql "  ; [ "$(psql -At -c 'select 5' $uri)" == "5" ]
+	printf "start " ; url=$($0 -t 3 start)
+	printf "psql "  ; [ "$(psql -At -c 'select 5' $url)" == "5" ]
 	printf "stop "  ; sleep 10
 	printf "verify "; ! [ -d dir ]
 	echo; echo "OK"
