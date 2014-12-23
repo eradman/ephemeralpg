@@ -71,14 +71,15 @@ start|--)
 	url="postgresql://$(echo $TD/socket | sed 's:/:%2F:g')/ephemeral"
 	echo -n "$url"
 	# background initdb cuts startup by 3.8 seconds
-	nohup $0 initdb > /dev/null &
+	nohup $0 initdb > $TD/initdb.log &
 	# shutting down takes nearly 1.3 seconds
 	# return control so the calling process can use the connection
-	nohup $0 -t $TIMEOUT -d $TD stop > /dev/null &
+	nohup $0 -t $TIMEOUT -d $TD stop > $TD/stop.log &
 	;;
 stop)
 	sleep $TIMEOUT
 	pg_ctl -D $TD/db stop -m immediate || true
+	sleep 1
 	rm -rf $TD
 	;;
 selftest)
