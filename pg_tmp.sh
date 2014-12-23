@@ -39,7 +39,7 @@ done
 
 case $1 in
 initdb)
-	TD="$(mktemp -d ${SYSTMP:-/tmp}/pg_tmp.XXXXXX)"
+	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg.XXXXXX)"
 	# disabling fsync cuts time down by .5 seconds
 	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
 	mkdir $TD/socket
@@ -54,7 +54,7 @@ initdb)
 	;;
 start|--)
 	# Find a temporary database directory owned by the current user
-	for d in $(ls -d ${SYSTMP:-/tmp}/pg_tmp.* 2> /dev/null); do
+	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg.* 2> /dev/null); do
 		test -O $d/NEW && { TD=$d; break; }
 	done
 	[ -z $TD ] && TD=$($0 initdb)
@@ -82,7 +82,7 @@ stop)
 	rm -rf $TD
 	;;
 selftest)
-	export SYSTMP=$(mktemp -d /tmp/pg_tmp-selftest.XXXXXX)
+	export SYSTMP=$(mktemp -d /tmp/ephemeralpg-selftest.XXXXXX)
 	trap "rm -rf $SYSTMP" EXIT
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)

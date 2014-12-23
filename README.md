@@ -18,7 +18,7 @@ Example
 -------
 
     #!/bin/sh
-    uri=$(pg_temp -t 30)
+    uri=$(pg_tmp -t 30)
     echo "Using $uri"
     psql $uri -c 'select now()'
 
