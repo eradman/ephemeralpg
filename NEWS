@@ -1,4 +1,6 @@
-== 1.0: December 16, 2014
+= Release History
+
+== 1.0: January 07, 2015
 
  - Initial release at https://bitbucket.org/eradman/ephemeralpg
  - Cross-platform implementation in less then 100 lines of code

@@ -27,9 +27,28 @@ Installation
 
     make install
 
+Or to specify a specific installation location
+
+    PREFIX=$HOME/local make install
+
 Requirements
 ------------
 
+* KSH or BASH
 * PostgreSQL 9.3+
 
+News
+----
+
+A release history as well as features in the upcoming release are covered in the
+[NEWS][NEWS] file.
+
+License
+-------
+
+Source is under and ISC-style license. See the [LICENSE][LICENSE] file for more
+detailed information on the license used for compatibility libraries.
+
+[NEWS]: http://www.bitbucket.org/eradman/ephemeralpg/src/default/NEWS
+[LICENSE]: http://www.bitbucket.org/eradman/ephemeralpg/src/default/LICENSE
 
