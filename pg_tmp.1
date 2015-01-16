@@ -21,8 +21,8 @@
 .Nd spin up temporary PostgreSQL database
 .Sh SYNOPSIS
 .Nm pg_tmp
-.Fl t
-.Ar expiration
+.Op Fl w Ar timeout
+.Op Fl t
 .Sh DESCRIPTION
 The
 .Nm
@@ -32,7 +32,9 @@ A URI to the new database is printed to
 .Dv STDOUT
 \&.
 Temporary databases are automatically shutdown and garbage collected after the
-specified timeout.
+specified
+.Ar timeout
+\&.
 .Pp
 Several tactics are used reduce the wait time for a new database to less than
 one second.
@@ -40,15 +42,19 @@ one second.
 spawns a background process that initializes a new database under
 .Pa /tmp/ephemeralpg.XXXXXX
 which is picked up by subsequent invocations.
+.Pp
+By default a Unix socket is returned. The
+.Fl t
+flag changes this to 127.0.0.1 with a port selected by
+.Xr getsocket 1
+\&.
 .Sh EXAMPLES
-Create a temporary database (to expire in 30 seconds) and run a query.
+Create a temporary database and run a query.
 .Bd -literal -offset indent
-uri=$(pg_tmp -t 30)
+uri=$(pg_tmp)
 psql $uri -f my.sql
 .Ed
 .Sh SEE ALSO
-.Xr getsocket 1
-,
 .Xr mktemp 1
 ,
 .Xr pg_ctl 1

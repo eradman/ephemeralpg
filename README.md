@@ -12,13 +12,15 @@ during subsequent invocations. Additional optimizations include:
 * Limited shared memory footprint
 
 The temporary database will be automatically garbage-collected after the number
-of seconds specified by the `-t` option.
+of seconds specified by the `-w` option (the default is 60).
+
+To use a TCP socket instead of UNIX socket use the `-t` flag
 
 Example
 -------
 
     #!/bin/sh
-    uri=$(pg_tmp -t 30)
+    uri=$(pg_tmp)
     echo "Using $uri"
     psql $uri -c 'select now()'
 

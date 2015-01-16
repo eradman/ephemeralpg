@@ -16,7 +16,7 @@
 
 usage() {
 	prog=$(basename $0)
-	echo "usage: $prog [-w expiration] [-t]"
+	echo "usage: $prog [-w timeout] [-t]"
 	exit 2
 }
 
