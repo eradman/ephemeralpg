@@ -1,4 +1,19 @@
-.Dd January 7, 2015
+.\"
+.\" Copyright (c) 2012 Eric Radman <ericshane@eradman.com>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd January 16, 2015
 .Dt PG_TMP 1
 .Os
 .Sh NAME
@@ -11,13 +26,31 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility uses several tricks to reduce the wait time for a new database to less
-than one second by initializing a database in the background that is recycled
-during subsequent invocations.
+utility is used for spinning up a temporary PostgreSQL database for use in
+automated testing.
+A URI to the new database is printed to
+.Dv STDOUT
+\&.
+Temporary databases are automatically shutdown and garbage collected after the
+specified timeout.
+.Pp
+Several tactics are used reduce the wait time for a new database to less than
+one second.
+.Nm
+spawns a background process that initializes a new database under
+.Pa /tmp/ephemeralpg.XXXXXX
+which is picked up by subsequent invocations.
 .Sh EXAMPLES
-Spin up a temporary database, run a query.
-Will be shutdown after 30 seconds
+Create a temporary database (to expire in 30 seconds) and run a query.
 .Bd -literal -offset indent
 uri=$(pg_tmp -t 30)
 psql $uri -f my.sql
 .Ed
+.Sh SEE ALSO
+.Xr getsocket 1
+,
+.Xr mktemp 1
+,
+.Xr pg_ctl 1
+.Sh CAVEATS
+Concurrent use of multiple major versions of PostgreSQL is not supported.

@@ -1,27 +1,29 @@
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
 
-all: pg_tmp
+all: getsocket
 
-pg_tmp: pg_tmp.sh
-	ln -s pg_tmp.sh pg_tmp
+getsocket: getsocket.c
+	${CC} ${CFLAGS} ${CPPFLAGS} ${EXTRA_SRC} getsocket.c -o $@ ${LDFLAGS}
+	@chmod +x $@
 
-regress: pg_tmp
+regress: pg_tmp.sh
 	@/bin/echo "Using `pg_ctl --version`"
 	@./pg_tmp.sh selftest
 
-install: pg_tmp
+install: getsocket
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	install pg_tmp ${DESTDIR}${PREFIX}/bin/pg_tmp
+	install getsocket ${DESTDIR}${PREFIX}/bin/
+	install pg_tmp.sh ${DESTDIR}${PREFIX}/bin/pg_tmp
 	install -m 644 pg_tmp.1 ${DESTDIR}${MANPREFIX}/man1
 
 uninstall:
 	rm ${DESTDIR}${PREFIX}/bin/pg_tmp
-	rm ${DESTDIR}${MANPREFIX}/man1
+	rm ${DESTDIR}${PREFIX}/bin/getsocket
+	rm ${DESTDIR}${MANPREFIX}/man1/pg_tmp.1
 
 clean:
-	rm pg_tmp
-	rm -rf /tmp/pg_tmp-selftest*
+	rm -f pg_tmp getsocket *.o
 
 .PHONY: clean distclean

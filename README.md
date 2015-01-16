@@ -1,7 +1,7 @@
 ephemeralpg
 ===========
 
-Quickly spin up a temporary Postgres test databases.
+Quickly spin up a temporary Postgres test database.
 
 `pg_tmp` uses several tricks to reduce the wait time for a new database to less
 than one second by initializing a database in the background that is recycled

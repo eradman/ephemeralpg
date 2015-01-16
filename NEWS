@@ -1,3 +1,8 @@
+= Next Release: 1.1
+
+ - Timeout flag changed from '-t' to '-w'
+ - Optionally bind to a TCP port using bundled getsocket(1) utility
+
 = Release History
 
 == 1.0: January 07, 2015

@@ -16,7 +16,7 @@
 
 usage() {
 	prog=$(basename $0)
-	echo "usage: $prog -t expiration"
+	echo "usage: $prog [-w expiration] [-t]"
 	exit 2
 }
 
@@ -24,14 +24,16 @@ trap 'printf "$0: exit code $? on line $LINENO\n"; exit 1' ERR \
 	2> /dev/null || exec bash $0 "$@"
 set +o posix
 
-args=`getopt t:d: $*`
+TIMEOUT=60
+args=`getopt w:d:t $*`
 [ $? -ne 0 ] && usage
 set -- $args
 while [ $# -gt 1 ]; do
 	case "$1"
 	in
-		-t) TIMEOUT="$2"; shift; shift;;
+		-w) TIMEOUT="$2"; shift; shift;;
 		-d) TD="$2"; shift; shift;;
+		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)"; shift;;
 		--) shift; break;;
 	esac
 done
@@ -60,21 +62,29 @@ start|--)
 	[ -z $TD ] && TD=$($0 initdb)
 	rm $TD/NEW
 	# disabling fsync cuts startup by .8 seconds
-	pg_ctl -o "-F" -s -D $TD/db -l $TD/log start
+	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
+	pg_ctl -o "-F" -o "$OPTS" -s -D $TD/db -l $TD/log start
+	# uri format documented at
+	# http://www.postgresql.org/docs/9.4/static/libpq-connect.html
+	PGHOST=$TD/socket
+	if [ -n "$PGPORT" ]; then
+		url="postgresql://$LISTENTO:$PGPORT/ephemeral"
+	else
+		url="postgresql://$(echo $PGHOST | sed 's:/:%2F:g')/ephemeral"
+	fi
 	# .4 seconds faster than start -w
 	for n in 1 2 3 4 5; do
 		sleep 0.1
-		PGHOST=$TD/socket createdb -E UNICODE ephemeral 2> /dev/null && break
+		export PGPORT PGHOST
+		createdb -E UNICODE ephemeral 2> $TD/log && break
 	done
-	# uri format documented at
-	# http://www.postgresql.org/docs/9.4/static/libpq-connect.html
-	url="postgresql://$(echo $TD/socket | sed 's:/:%2F:g')/ephemeral"
+	[ $? != 0 ] && cat $TD/log
 	echo -n "$url"
 	# background initdb cuts startup by 3.8 seconds
 	nohup $0 initdb > $TD/initdb.log &
 	# shutting down takes nearly 1.3 seconds
 	# return control so the calling process can use the connection
-	nohup $0 -t $TIMEOUT -d $TD stop > $TD/stop.log &
+	nohup $0 -w $TIMEOUT -d $TD stop >> $TD/stop.log &
 	;;
 stop)
 	sleep $TIMEOUT
@@ -87,7 +97,7 @@ selftest)
 	trap "rm -rf $SYSTMP" EXIT
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
-	printf "start " ; url=$($0 -t 3 start)
+	printf "start " ; url=$($0 -w 3 start)
 	printf "psql "  ; [ "$(psql -At -c 'select 5' $url)" == "5" ]
 	printf "stop "  ; sleep 10
 	printf "verify "; ! [ -d dir ]
