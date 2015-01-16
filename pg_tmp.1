@@ -43,7 +43,8 @@ spawns a background process that initializes a new database under
 .Pa /tmp/ephemeralpg.XXXXXX
 which is picked up by subsequent invocations.
 .Pp
-By default a Unix socket is returned. The
+By default a Unix socket is returned.
+The
 .Fl t
 flag changes this to 127.0.0.1 with a port selected by
 .Xr getsocket 1

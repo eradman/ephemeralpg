@@ -15,6 +15,7 @@
  */
 
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 #include <netdb.h>
 #include <stdio.h>
@@ -25,6 +26,7 @@
  * fetch an unused TCP port for temporary services to use
  */
 
+int
 main(int argc, char *argv[]) {
 	struct sockaddr_in addr;
 	int sock;
