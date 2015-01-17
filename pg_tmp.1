@@ -29,12 +29,10 @@ The
 utility is used for spinning up a temporary PostgreSQL database for use in
 automated testing.
 A URI to the new database is printed to
-.Dv STDOUT
-\&.
+.Dv STDOUT .
 Temporary databases are automatically shutdown and garbage collected after the
 specified
-.Ar timeout
-\&.
+.Ar timeout .
 .Pp
 Several tactics are used reduce the wait time for a new database to less than
 one second.
@@ -47,8 +45,7 @@ By default a Unix socket is returned.
 The
 .Fl t
 flag changes this to 127.0.0.1 with a port selected by
-.Xr getsocket 1
-\&.
+.Xr getsocket 1 .
 .Sh EXAMPLES
 Create a temporary database and run a query.
 .Bd -literal -offset indent
@@ -56,8 +53,7 @@ uri=$(pg_tmp)
 psql $uri -f my.sql
 .Ed
 .Sh SEE ALSO
-.Xr mktemp 1
-,
+.Xr mktemp 1 ,
 .Xr pg_ctl 1
 .Sh CAVEATS
 Concurrent use of multiple major versions of PostgreSQL is not supported.
