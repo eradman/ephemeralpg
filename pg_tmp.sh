@@ -50,6 +50,9 @@ initdb)
 	    unix_socket_directories='$TD/socket'
 	    listen_addresses=''
 	    shared_buffers=12MB
+	    log_min_duration_statement = 0
+	    log_connections = on
+	    log_disconnections = on
 	EOF
 	touch $TD/NEW
 	echo $TD
@@ -63,7 +66,7 @@ start|--)
 	rm $TD/NEW
 	# disabling fsync cuts startup by .8 seconds
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
-	pg_ctl -o "-F" -o "$OPTS" -s -D $TD/db -l $TD/log start
+	pg_ctl -o "-F" -o "$OPTS" -s -D $TD/db -l $TD/postgres.log start
 	# uri format documented at
 	# http://www.postgresql.org/docs/9.4/static/libpq-connect.html
 	PGHOST=$TD/socket
@@ -76,9 +79,9 @@ start|--)
 	for n in 1 2 3 4 5; do
 		sleep 0.1
 		export PGPORT PGHOST
-		createdb -E UNICODE ephemeral 2> $TD/log && break
+		createdb -E UNICODE ephemeral 2> $TD/postgres.log && break
 	done
-	[ $? != 0 ] && cat $TD/log
+	[ $? != 0 ] && cat $TD/postgres.log
 	echo -n "$url"
 	# background initdb cuts startup by 3.8 seconds
 	nohup $0 initdb > $TD/initdb.log &
