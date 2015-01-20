@@ -1,3 +1,9 @@
+= Next Release: 1.2
+
+- Log statements and connect/disconnects
+- Database is shutdown only if no other database connections are active. The
+  timeout now specifies this check interval
+
 = Release History
 
 == 1.1: January 17, 2015

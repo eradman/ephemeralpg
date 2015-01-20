@@ -13,7 +13,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd January 16, 2015
+.Dd January 20, 2015
 .Dt PG_TMP 1
 .Os
 .Sh NAME
@@ -30,9 +30,13 @@ utility is used for spinning up a temporary PostgreSQL database for use in
 automated testing.
 A URI to the new database is printed to
 .Dv STDOUT .
-Temporary databases are automatically shutdown and garbage collected after the
-specified
+.Pp
+Temporary databases are automatically shutdown and garbage collected after 60
+seconds or the specified
 .Ar timeout .
+If one or more clients are still connected then
+.Nm
+sleeps and retries again after the same interval.
 .Pp
 Several tactics are used reduce the wait time for a new database to less than
 one second.
@@ -47,7 +51,7 @@ The
 flag changes this to 127.0.0.1 with a port selected by
 .Xr getsocket 1 .
 .Sh EXAMPLES
-Create a temporary database and run a query.
+Create a temporary database and run a query:
 .Bd -literal -offset indent
 uri=$(pg_tmp)
 psql $uri -f my.sql

@@ -70,6 +70,7 @@ start|--)
 	# uri format documented at
 	# http://www.postgresql.org/docs/9.4/static/libpq-connect.html
 	PGHOST=$TD/socket
+	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
 		url="postgresql://$LISTENTO:$PGPORT/ephemeral"
 	else
@@ -78,7 +79,6 @@ start|--)
 	# .4 seconds faster than start -w
 	for n in 1 2 3 4 5; do
 		sleep 0.1
-		export PGPORT PGHOST
 		createdb -E UNICODE ephemeral 2> $TD/postgres.log && break
 	done
 	[ $? != 0 ] && cat $TD/postgres.log
@@ -90,10 +90,14 @@ start|--)
 	nohup $0 -w $TIMEOUT -d $TD stop >> $TD/stop.log &
 	;;
 stop)
-	sleep $TIMEOUT
-	pg_ctl -D $TD/db stop -m immediate || true
-	sleep 1
-	rm -rf $TD
+	trap "rm -rf $TD" EXIT
+	export PGHOST=$TD/socket
+	until [ "$connections" == "1" ]; do
+		sleep $TIMEOUT
+		connections=$(psql ephemeral -At -c 'SELECT count(*) FROM pg_stat_activity')
+	done
+	pg_ctl -D $TD/db stop -m immediate
+	sleep 2
 	;;
 selftest)
 	export SYSTMP=$(mktemp -d /tmp/ephemeralpg-selftest.XXXXXX)
