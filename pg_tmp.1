@@ -13,7 +13,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd January 22, 2015
+.Dd January 23, 2015
 .Dt PG_TMP 1
 .Os
 .Sh NAME
@@ -27,14 +27,16 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility is used for spinning up a temporary PostgreSQL database for use in
-automated testing.
-A URI to the new database is printed to
-.Dv STDOUT .
+utility creates a temporary instance of PostgreSQL and prints the connection URI
+to standard output.
+.Nm
+spawns a background process that initializes a new database under
+.Pa /tmp/ephemeralpg.*
+which is used by subsequent invocations to reduce startup time.
 The arguments are as follows:
 .Bl -tag -width Ds
 .It Fl w
-Shut down the database after the specified
+Shut down and remove the database after the specified
 .Ar timeout .
 If one or more clients are still connected then
 .Nm
@@ -43,21 +45,14 @@ The default is 60 seconds.
 .It Fl l
 Write connections, statements, and errors to the specified
 .Ar logfile .
-If not specified the log created in the temporary directory as
+If not specified the log is created in the temporary directory as
 .Pa db/postgresql.log .
 .It Fl t
 Use a TCP port selected by
 .Xr getsocket 1
 bound to 127.0.0.1.
-Otherwise the path to  Unix socket is returned.
+Otherwise the path to a Unix socket is returned.
 .El
-.Pp
-Several tactics are used reduce the wait time for a new database to less than
-one second.
-.Nm
-spawns a background process that initializes a new database under
-.Pa /tmp/ephemeralpg.*
-which is picked up by subsequent invocations.
 .Sh EXAMPLES
 Create a temporary database and run a query:
 .Bd -literal -offset indent
