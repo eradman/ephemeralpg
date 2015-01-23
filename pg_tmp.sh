@@ -16,7 +16,7 @@
 
 usage() {
 	prog=$(basename $0)
-	echo "usage: $prog [-w timeout] [-t]"
+	echo "usage: $prog [-w timeout] [-l logfile] [-t]"
 	exit 2
 }
 
@@ -25,7 +25,7 @@ trap 'printf "$0: exit code $? on line $LINENO\n"; exit 1' ERR \
 set +o posix
 
 TIMEOUT=60
-args=`getopt w:d:l:t $*`
+args=`getopt w:d:l:th $*`
 [ $? -ne 0 ] && usage
 set -- $args
 while [ $# -gt 1 ]; do
@@ -35,6 +35,7 @@ while [ $# -gt 1 ]; do
 		-d) TD="$2"; shift; shift;;
 		-l) LOGFILE="$2"; shift; shift;;
 		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)"; shift;;
+		-h) usage;;
 		--) shift; break;;
 	esac
 done
