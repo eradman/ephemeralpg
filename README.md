@@ -3,26 +3,34 @@ ephemeralpg
 
 Run tests on an isolated, temporary Postgres database.
 
-`pg_tmp` uses several tricks to reduce the wait time for a new database to less
-than one second by initializing a database in the background that is recycled
-during subsequent invocations. Additional optimizations include:
+Temporary database created with `pg_tmp` have a limited shared memory footprint
+and are automatically garbage-collected after the number of seconds specified by
+the `-w` option (the default is 60).
 
-* Running with fsync=off
-* Spin to discover when the database is available
-* Limited shared memory footprint
+`pg_tmp` reduces the wait time for a new database to less than one second by
+initializing a database in the background that is used by subsequent
+invocations.
 
-The temporary database will be automatically garbage-collected after the number
-of seconds specified by the `-w` option (the default is 60).
+Examples
+--------
 
-To use a TCP socket instead of UNIX socket use the `-t` flag
+*Shell*
 
-Example
--------
-
-    #!/bin/sh
     uri=$(pg_tmp)
     echo "Using $uri"
     psql $uri -c 'select now()'
+
+*Python*
+
+    import psycopg2
+    from subprocess import check_output
+    
+    url = check_output(["pg_tmp"])
+    with psycopg2.connect(url) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("select now();")
+            print(cursor.fetchone()[0])
+
 
 Installation
 ------------
