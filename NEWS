@@ -1,8 +1,10 @@
 = Next Release: 1.2
 
-- Log statements and connect/disconnects
+- Log statements and connect/disconnects.
+- Specify log file location with '-l' flag
 - Database is shutdown only if no other database connections are active. The
   timeout now specifies this check interval
+- The newline is not suppressed if run in a terminal
 
 = Release History
 

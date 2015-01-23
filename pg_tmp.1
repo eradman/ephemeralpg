@@ -13,15 +13,16 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd January 20, 2015
+.Dd January 22, 2015
 .Dt PG_TMP 1
 .Os
 .Sh NAME
 .Nm pg_tmp
-.Nd spin up temporary PostgreSQL database
+.Nd quickly spin up temporary PostgreSQL database
 .Sh SYNOPSIS
 .Nm pg_tmp
 .Op Fl w Ar timeout
+.Op Fl l Ar logfile
 .Op Fl t
 .Sh DESCRIPTION
 The
@@ -30,26 +31,33 @@ utility is used for spinning up a temporary PostgreSQL database for use in
 automated testing.
 A URI to the new database is printed to
 .Dv STDOUT .
-.Pp
-Temporary databases are automatically shutdown and garbage collected after 60
-seconds or the specified
+The arguments are as follows:
+.Bl -tag -width Ds
+.It Fl w
+Shut down the database after the specified
 .Ar timeout .
 If one or more clients are still connected then
 .Nm
 sleeps and retries again after the same interval.
+The default is 60 seconds.
+.It Fl l
+Write connections, statements, and errors to the specified
+.Ar logfile .
+If not specified the log created in the temporary directory as
+.Pa db/postgresql.log .
+.It Fl t
+Use a TCP port selected by
+.Xr getsocket 1
+bound to 127.0.0.1.
+Otherwise the path to  Unix socket is returned.
+.El
 .Pp
 Several tactics are used reduce the wait time for a new database to less than
 one second.
 .Nm
 spawns a background process that initializes a new database under
-.Pa /tmp/ephemeralpg.XXXXXX
+.Pa /tmp/ephemeralpg.*
 which is picked up by subsequent invocations.
-.Pp
-By default a Unix socket is returned.
-The
-.Fl t
-flag changes this to 127.0.0.1 with a port selected by
-.Xr getsocket 1 .
 .Sh EXAMPLES
 Create a temporary database and run a query:
 .Bd -literal -offset indent
@@ -59,5 +67,3 @@ psql $uri -f my.sql
 .Sh SEE ALSO
 .Xr mktemp 1 ,
 .Xr pg_ctl 1
-.Sh CAVEATS
-Concurrent use of multiple major versions of PostgreSQL is not supported.

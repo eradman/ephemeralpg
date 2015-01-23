@@ -25,7 +25,7 @@ trap 'printf "$0: exit code $? on line $LINENO\n"; exit 1' ERR \
 set +o posix
 
 TIMEOUT=60
-args=`getopt w:d:t $*`
+args=`getopt w:d:l:t $*`
 [ $? -ne 0 ] && usage
 set -- $args
 while [ $# -gt 1 ]; do
@@ -33,6 +33,7 @@ while [ $# -gt 1 ]; do
 	in
 		-w) TIMEOUT="$2"; shift; shift;;
 		-d) TD="$2"; shift; shift;;
+		-l) LOGFILE="$2"; shift; shift;;
 		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)"; shift;;
 		--) shift; break;;
 	esac
@@ -42,10 +43,8 @@ done
 case $1 in
 initdb)
 	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg.XXXXXX)"
-	# disabling fsync cuts time down by .5 seconds
 	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
 	mkdir $TD/socket
-	# drop shared_buffers to allow numerous concurrent instances
 	cat <<-EOF >> $TD/db/postgresql.conf
 	    unix_socket_directories='$TD/socket'
 	    listen_addresses=''
@@ -64,11 +63,9 @@ start|--)
 	done
 	[ -z $TD ] && TD=$($0 initdb)
 	rm $TD/NEW
-	# disabling fsync cuts startup by .8 seconds
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
-	pg_ctl -o "-F" -o "$OPTS" -s -D $TD/db -l $TD/postgres.log start
-	# uri format documented at
-	# http://www.postgresql.org/docs/9.4/static/libpq-connect.html
+	[ -n "$LOGFILE" ] || LOGFILE="$TD/db/postgres.log"
+	pg_ctl -o "-F" -o "$OPTS" -s -D $TD/db -l $LOGFILE start
 	PGHOST=$TD/socket
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
@@ -76,27 +73,23 @@ start|--)
 	else
 		url="postgresql://$(echo $PGHOST | sed 's:/:%2F:g')/ephemeral"
 	fi
-	# .4 seconds faster than start -w
 	for n in 1 2 3 4 5; do
 		sleep 0.1
-		createdb -E UNICODE ephemeral 2> $TD/postgres.log && break
+		createdb -E UNICODE ephemeral > /dev/null 2>&1 && break
 	done
-	[ $? != 0 ] && cat $TD/postgres.log
-	echo -n "$url"
-	# background initdb cuts startup by 3.8 seconds
-	nohup $0 initdb > $TD/initdb.log &
-	# shutting down takes nearly 1.3 seconds
-	# return control so the calling process can use the connection
-	nohup $0 -w $TIMEOUT -d $TD stop >> $TD/stop.log &
+	[ $? != 0 ] && cat $LOGFILE
+	[ -t 1 ] && echo "$url" || echo -n "$url"
+	nohup nice -n 19 $0 initdb > $TD/initdb.log &
+	nohup nice -n 19 $0 -w $TIMEOUT -d $TD stop > $TD/stop.log &
 	;;
 stop)
 	trap "rm -rf $TD" EXIT
 	export PGHOST=$TD/socket
 	until [ "$connections" == "1" ]; do
 		sleep $TIMEOUT
-		connections=$(psql ephemeral -At -c 'SELECT count(*) FROM pg_stat_activity')
+		connections=$(psql ephemeral -At -c 'SELECT count(*) FROM pg_stat_activity;')
 	done
-	pg_ctl -D $TD/db stop -m immediate
+	pg_ctl -D $TD/db stop
 	sleep 2
 	;;
 selftest)
