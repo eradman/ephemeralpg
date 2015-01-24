@@ -47,9 +47,10 @@ initdb)
 	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
 	mkdir $TD/socket
 	cat <<-EOF >> $TD/db/postgresql.conf
-	    unix_socket_directories='$TD/socket'
-	    listen_addresses=''
-	    shared_buffers=12MB
+	    unix_socket_directories = '$TD/socket'
+	    listen_addresses = ''
+	    shared_buffers = 12MB
+	    full_page_writes = off
 	    log_min_duration_statement = 0
 	    log_connections = on
 	    log_disconnections = on
@@ -70,13 +71,13 @@ start|--)
 	PGHOST=$TD/socket
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
-		url="postgresql://$LISTENTO:$PGPORT/ephemeral"
+		url="postgresql://$LISTENTO:$PGPORT/test"
 	else
-		url="postgresql://$(echo $PGHOST | sed 's:/:%2F:g')/ephemeral"
+		url="postgresql://$(echo $PGHOST | sed 's:/:%2F:g')/test"
 	fi
 	for n in 1 2 3 4 5; do
 		sleep 0.1
-		createdb -E UNICODE ephemeral > /dev/null 2>&1 && break
+		createdb -E UNICODE test > /dev/null 2>&1 && break
 	done
 	[ $? != 0 ] && cat $LOGFILE
 	[ -t 1 ] && echo "$url" || echo -n "$url"
@@ -88,7 +89,7 @@ stop)
 	export PGHOST=$TD/socket
 	until [ "$connections" == "1" ]; do
 		sleep $TIMEOUT
-		connections=$(psql ephemeral -At -c 'SELECT count(*) FROM pg_stat_activity;')
+		connections=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;')
 	done
 	pg_ctl -D $TD/db stop
 	sleep 2

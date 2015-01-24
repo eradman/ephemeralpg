@@ -1,5 +1,5 @@
-ephemeralpg
-===========
+Ephemeral PostgreSQL
+====================
 
 Run tests on an isolated, temporary Postgres database.
 
