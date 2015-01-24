@@ -50,6 +50,7 @@ initdb)
 	    unix_socket_directories = '$TD/socket'
 	    listen_addresses = ''
 	    shared_buffers = 12MB
+	    fsync = off
 	    full_page_writes = off
 	    log_min_duration_statement = 0
 	    log_connections = on
@@ -67,7 +68,7 @@ start|--)
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	[ -n "$LOGFILE" ] || LOGFILE="$TD/db/postgres.log"
-	pg_ctl -o "-F" -o "$OPTS" -s -D $TD/db -l $LOGFILE start
+	pg_ctl -o "$OPTS" -s -D $TD/db -l $LOGFILE start
 	PGHOST=$TD/socket
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
