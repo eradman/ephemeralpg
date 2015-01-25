@@ -5,6 +5,7 @@
 - Database is shutdown only if no other database connections are active. The
   timeout now specifies this check interval
 - The newline is not suppressed if run in a terminal
+- Bugfix in getsock(1) so that only ports above 1024 are returned
 
 = Release History
 

@@ -30,17 +30,19 @@ int
 main(int argc, char *argv[]) {
 	struct sockaddr_in addr;
 	int sock;
-	socklen_t len = sizeof(addr);
+	socklen_t addrlen = sizeof(addr);
+	int port;
 
-	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, 0, 0);
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = inet_addr("0.0.0.0");
 	addr.sin_port = htons(0);
-	addr.sin_addr.s_addr = htonl(inet_addr("0.0.0.0"));
-	bind(sock, (struct sockaddr*) &addr, sizeof(addr));
-	getsockname(sock, (struct sockaddr*) &addr, &len);
 
-	printf("%d\n", addr.sin_port);
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	bind(sock, (struct sockaddr*) &addr, sizeof(addr));
+	getsockname(sock, (struct sockaddr*) &addr, &addrlen);
+	port = ntohs(addr.sin_port); 
+
+	printf("%d\n", port);
 	return 0;
 }
