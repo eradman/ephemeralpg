@@ -1,4 +1,4 @@
-= Next Release: 1.2
+= 1.2: January 24, 2014
 
 - Log statements and connect/disconnects.
 - Specify log file location with '-l' flag
@@ -6,8 +6,6 @@
   timeout now specifies this check interval
 - The newline is not suppressed if run in a terminal
 - Bugfix in getsock(1) so that only ports above 1024 are returned
-
-= Release History
 
 == 1.1: January 17, 2015
 
