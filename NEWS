@@ -1,17 +1,16 @@
-= 1.2: January 24, 2014
+= 1.2: January 24, 2015
 
 - Log statements and connect/disconnects.
 - Specify log file location with '-l' flag
-- Database is shutdown only if no other database connections are active. The
-  timeout now specifies this check interval
-- The newline is not suppressed if run in a terminal
+- Database is shutdown only after clients have disconnected. The timeout now
+  specifies a check interval
+- Newline is not suppressed if run in a terminal
 - Bugfix in getsock(1) so that only ports above 1024 are returned
 
 == 1.1: January 17, 2015
 
  - Timeout flag changed to '-w' to match netcat(1)
  - Use '-t' flag to bind to a TCP port using bundled getsocket(1) utility
-
 
 == 1.0: January 07, 2015
 
