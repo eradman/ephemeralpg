@@ -1,11 +1,16 @@
+= Next Release: 1.3
+
+ - Display release number along with usage help text
+ - Unregonized options display usage
+
 = 1.2: January 24, 2015
 
-- Log statements and connect/disconnects.
-- Specify log file location with '-l' flag
-- Database is shutdown only after clients have disconnected. The timeout now
-  specifies a check interval
-- Newline is not suppressed if run in a terminal
-- Bugfix in getsock(1) so that only ports above 1024 are returned
+ - Log statements and connect/disconnects.
+ - Specify log file location with '-l' flag
+ - Database is shutdown only after clients have disconnected. The timeout now
+   specifies a check interval
+ - Newline is not suppressed if run in a terminal
+ - Bugfix in getsock(1) so that only ports above 1024 are returned
 
 == 1.1: January 17, 2015
 
