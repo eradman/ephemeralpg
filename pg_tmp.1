@@ -22,7 +22,6 @@
 .Sh SYNOPSIS
 .Nm pg_tmp
 .Op Fl w Ar timeout
-.Op Fl l Ar logfile
 .Op Fl t
 .Sh DESCRIPTION
 The
@@ -42,11 +41,6 @@ If one or more clients are still connected then
 .Nm
 sleeps and retries again after the same interval.
 The default is 60 seconds.
-.It Fl l
-Write connections, statements, and errors to the specified
-.Ar logfile .
-If not specified the log is created in the temporary directory as
-.Pa db/postgresql.log .
 .It Fl t
 Use a TCP port selected by
 .Xr getsocket 1

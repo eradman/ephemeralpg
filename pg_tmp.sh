@@ -17,7 +17,7 @@
 usage() {
 	prog=$(basename $0)
 	echo "release: ${release}"
-	echo "usage: ${prog} [-w timeout] [-l logfile] [-t]"
+	echo "usage: ${prog} [-w timeout] [-t]"
 	exit 1
 }
 
@@ -33,7 +33,6 @@ while [ $# -gt 1 ]; do
 	in
 		-w) TIMEOUT="$2"; shift; shift;;
 		-d) TD="$2"; shift; shift;;
-		-l) LOGFILE="$2"; shift; shift;;
 		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)"; shift;;
 		--) shift; break;;
 	esac
@@ -67,7 +66,7 @@ start|--)
 	[ -z $TD ] && TD=$($0 initdb)
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
-	[ -n "$LOGFILE" ] || LOGFILE="$TD/db/postgres.log"
+	LOGFILE="$TD/db/postgres.log"
 	pg_ctl -o "$OPTS" -s -D $TD/db -l $LOGFILE start
 	PGHOST=$TD
 	export PGPORT PGHOST

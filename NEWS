@@ -4,6 +4,7 @@
  - Unrecognized options display usage
  - Temporary directory is named with the major version number
  - Simplify socket URL
+ - Drop log file location flag
 
 = 1.2: January 24, 2015
 
