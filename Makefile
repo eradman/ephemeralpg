@@ -15,7 +15,7 @@ selftest: pg_tmp
 	@/bin/echo "Using `pg_ctl --version`"
 	@./pg_tmp.sh selftest
 
-install: getsocket
+install: pg_tmp getsocket
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	install getsocket ${DESTDIR}${PREFIX}/bin/
