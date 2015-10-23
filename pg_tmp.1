@@ -27,11 +27,11 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility creates a temporary instance of PostgreSQL and prints the connection URI
+utility creates a temporary instance of PostgreSQL and prints the connection URL
 to standard output.
 .Nm
 spawns a background process that initializes a new database under
-.Pa /tmp/ephemeralpg.*
+.Pa /tmp/ephemeralpg${PGVER}.*
 which is used by subsequent invocations to reduce startup time.
 The arguments are as follows:
 .Bl -tag -width Ds
@@ -53,6 +53,11 @@ Use a TCP port selected by
 bound to 127.0.0.1.
 Otherwise the path to a Unix socket is returned.
 .El
+.Sh ENVIRONMENT
+.Bl -tag -width TMPDIR
+.It Ev TMPDIR
+base directory in which to create and run the ephemeral instances of
+.Xr postgres 1
 .Sh EXAMPLES
 Create a temporary database and run a query:
 .Bd -literal -offset indent
@@ -60,5 +65,4 @@ uri=$(pg_tmp)
 psql $uri -f my.sql
 .Ed
 .Sh SEE ALSO
-.Xr mktemp 1 ,
 .Xr pg_ctl 1

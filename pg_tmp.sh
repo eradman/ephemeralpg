@@ -26,7 +26,7 @@ trap 'printf "$0: exit code $? on line $LINENO\n"; exit 1' ERR \
 set +o posix
 
 TIMEOUT=60
-args=`getopt w:d:l:th $*` || usage
+args=`getopt w:d:l:t $*` || usage
 set -- $args
 while [ $# -gt 1 ]; do
 	case "$1"
@@ -40,13 +40,14 @@ while [ $# -gt 1 ]; do
 done
 [ $# -ne 1 ] && usage
 
+PGVER=$(psql -V | sed 's/[^0-9.]*\([0-9]*\)\.\([0-9]*\).*/\1\2/')
+
 case $1 in
 initdb)
-	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg.XXXXXX)"
+	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg${PGVER}.XXXXXX)"
 	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
-	mkdir $TD/socket
 	cat <<-EOF >> $TD/db/postgresql.conf
-	    unix_socket_directories = '$TD/socket'
+	    unix_socket_directories = '$TD'
 	    listen_addresses = ''
 	    shared_buffers = 12MB
 	    fsync = off
@@ -60,7 +61,7 @@ initdb)
 	;;
 start|--)
 	# Find a temporary database directory owned by the current user
-	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg.* 2> /dev/null); do
+	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg${PGVER}.* 2> /dev/null); do
 		test -O $d/NEW && { TD=$d; break; }
 	done
 	[ -z $TD ] && TD=$($0 initdb)
@@ -68,7 +69,7 @@ start|--)
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	[ -n "$LOGFILE" ] || LOGFILE="$TD/db/postgres.log"
 	pg_ctl -o "$OPTS" -s -D $TD/db -l $LOGFILE start
-	PGHOST=$TD/socket
+	PGHOST=$TD
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
 		url="postgresql://$LISTENTO:$PGPORT/test"
@@ -86,7 +87,7 @@ start|--)
 	;;
 stop)
 	trap "rm -rf $TD" EXIT
-	export PGHOST=$TD/socket
+	export PGHOST=$TD
 	until [ "$connections" == "1" ]; do
 		sleep $TIMEOUT
 		connections=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;')
@@ -95,7 +96,7 @@ stop)
 	sleep 2
 	;;
 selftest)
-	export SYSTMP=$(mktemp -d /tmp/ephemeralpg-selftest.XXXXXX)
+	export SYSTMP=$(mktemp -d /tmp/ephemeralpg${PGVER}-selftest.XXXXXX)
 	trap "rm -rf $SYSTMP" EXIT
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
