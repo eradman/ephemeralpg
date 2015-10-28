@@ -3,6 +3,7 @@
  - Only remove the temporary directory if postgresql.auto.conf exists
  - Database is started under /tmp/ephemeralpg.*/$PGVER/ instead of
    /tmp/ephemeralpg$PGVER.*/db/
+ - More aggressively suppress warnings from nohup(1)
 
 = Release History
 

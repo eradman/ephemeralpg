@@ -82,8 +82,8 @@ start|--)
 	done
 	[ $? != 0 ] && cat $LOGFILE
 	[ -t 1 ] && echo "$url" || echo -n "$url"
-	nohup nice -n 19 $0 initdb > $TD/initdb.log &
-	nohup nice -n 19 $0 -w $TIMEOUT -d $TD stop > $TD/stop.log &
+	nohup nice -n 19 $0 initdb > null 2>&1 &
+	nohup nice -n 19 $0 -w $TIMEOUT -d $TD stop > $TD/stop.log 2>&1 &
 	;;
 stop)
 	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -rf $TD" EXIT
