@@ -85,7 +85,7 @@ start|--)
 	nohup nice -n 19 $0 -w $TIMEOUT -d $TD stop > $TD/stop.log &
 	;;
 stop)
-	trap "rm -rf $TD" EXIT
+	trap "test -O $TD/postgresql.auto.conf && rm -rf $DATADIR" EXIT
 	export PGHOST=$TD
 	until [ "$connections" == "1" ]; do
 		sleep $TIMEOUT
