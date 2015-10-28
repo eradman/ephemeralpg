@@ -30,7 +30,7 @@ utility creates a temporary instance of PostgreSQL and prints the connection URL
 to standard output.
 .Nm
 spawns a background process that initializes a new database under
-.Pa /tmp/ephemeralpg${PGVER}.*
+.Pa /tmp/ephemeralpg.*/${PGVER}
 which is used by subsequent invocations to reduce startup time.
 The arguments are as follows:
 .Bl -tag -width Ds

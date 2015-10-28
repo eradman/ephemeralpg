@@ -39,13 +39,13 @@ while [ $# -gt 1 ]; do
 done
 [ $# -ne 1 ] && usage
 
-PGVER=$(psql -V | sed 's/[^0-9.]*\([0-9]*\)\.\([0-9]*\).*/\1\2/')
+PGVER=$(psql -V | sed 's/[^0-9.]*\([0-9]*\)\.\([0-9]*\).*/\1.\2/')
 
 case $1 in
 initdb)
-	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg${PGVER}.XXXXXX)"
-	initdb --nosync -D $TD/db -E UNICODE -A trust > $TD/initdb.out
-	cat <<-EOF >> $TD/db/postgresql.conf
+	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg.XXXXXX)"
+	initdb --nosync -D $TD/$PGVER -E UNICODE -A trust > $TD/initdb.out
+	cat <<-EOF >> $TD/$PGVER/postgresql.conf
 	    unix_socket_directories = '$TD'
 	    listen_addresses = ''
 	    shared_buffers = 12MB
@@ -60,14 +60,15 @@ initdb)
 	;;
 start|--)
 	# Find a temporary database directory owned by the current user
-	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg${PGVER}.* 2> /dev/null); do
-		test -O $d/NEW && { TD=$d; break; }
+	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg.*/$PGVER 2> /dev/null); do
+		td=$(dirname "$d")
+		test -O $td/NEW && { TD=$td; break; }
 	done
 	[ -z $TD ] && TD=$($0 initdb)
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
-	LOGFILE="$TD/db/postgres.log"
-	pg_ctl -o "$OPTS" -s -D $TD/db -l $LOGFILE start
+	LOGFILE="$TD/$PGVER/postgres.log"
+	pg_ctl -o "$OPTS" -s -D $TD/$PGVER -l $LOGFILE start
 	PGHOST=$TD
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
@@ -85,17 +86,17 @@ start|--)
 	nohup nice -n 19 $0 -w $TIMEOUT -d $TD stop > $TD/stop.log &
 	;;
 stop)
-	trap "test -O $TD/postgresql.auto.conf && rm -rf $DATADIR" EXIT
+	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -rf $TD" EXIT
 	export PGHOST=$TD
 	until [ "$connections" == "1" ]; do
 		sleep $TIMEOUT
 		connections=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;')
 	done
-	pg_ctl -D $TD/db stop
+	pg_ctl -D $TD/$PGVER stop
 	sleep 2
 	;;
 selftest)
-	export SYSTMP=$(mktemp -d /tmp/ephemeralpg${PGVER}-selftest.XXXXXX)
+	export SYSTMP=$(mktemp -d /tmp/ephemeralpg-selftest.XXXXXX)
 	trap "rm -rf $SYSTMP" EXIT
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)

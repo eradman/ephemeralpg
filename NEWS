@@ -1,6 +1,8 @@
 = Next Release: 1.4
 
- -  Only remove the temporary directory if postgresql.auto.conf exists
+ - Only remove the temporary directory if postgresql.auto.conf exists
+ - Database is started under /tmp/ephemeralpg.*/$PGVER/ instead of
+   /tmp/ephemeralpg$PGVER.*/db/
 
 = Release History
 
