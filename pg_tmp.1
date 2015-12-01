@@ -13,7 +13,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd October 5, 2015
+.Dd December 1, 2015
 .Dt PG_TMP 1
 .Os
 .Sh NAME
@@ -23,6 +23,7 @@
 .Nm pg_tmp
 .Op Fl w Ar timeout
 .Op Fl t
+.Op Fl o Ar options
 .Sh DESCRIPTION
 The
 .Nm
@@ -46,17 +47,28 @@ Use a TCP port selected by
 .Xr getsocket 1
 bound to 127.0.0.1.
 Otherwise the path to a Unix socket is returned.
+.It Fl o
+Specifies options to be passed directly to the postgres command.
+The options should usually be surrounded by single or double quotes to ensure
+that they are passed through as a group.
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width TMPDIR
 .It Ev TMPDIR
 base directory in which to create and run the ephemeral instances of
 .Xr postgres 1
+.El
 .Sh EXAMPLES
 Create a temporary database and run a query:
 .Bd -literal -offset indent
 uri=$(pg_tmp)
 psql $uri -f my.sql
+.Ed
+.Pp
+Start a temporary server with a custom extension:
+.Bd -literal -offset indent
+uri=$(pg_tmp -o "-c shared_preload_libraries=$PWD/auth_hook")
+psql $uri -c "SELECT 1"
 .Ed
 .Sh SEE ALSO
 .Xr pg_ctl 1
