@@ -1,6 +1,7 @@
 = Next Release: 1.5
 
  - Allow options to be passed directly to postgres(1) on start using '-o'
+ - Copy log to STDERR and exit non-zero if server startup fails
 
 = Release History
 

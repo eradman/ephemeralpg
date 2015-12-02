@@ -79,7 +79,7 @@ start)
 		sleep 0.1
 		createdb -E UNICODE test > /dev/null 2>&1 && break
 	done
-	[ $? != 0 ] && cat $LOGFILE
+	[ $? != 0 ] && { >&2 cat $LOGFILE; exit 1; }
 	[ -t 1 ] && echo "$url" || echo -n "$url"
 	nohup nice -n 19 $0 initdb > null 2>&1 &
 	nohup nice -n 19 $0 -w $TIMEOUT -d $TD stop > $TD/stop.log 2>&1 &
