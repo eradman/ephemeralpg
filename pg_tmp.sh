@@ -16,8 +16,8 @@
 
 usage() {
 	prog=$(basename $0)
-	echo "release: ${release}"
-	echo "usage: ${prog} [-w timeout] [-t] [-o options]"
+	>&2 echo "release: ${release}"
+	>&2 echo "usage: ${prog} [-w timeout] [-t] [-o options]"
 	exit 1
 }
 
@@ -27,7 +27,7 @@ set +o posix
 
 TIMEOUT=60
 USER_OPTS=""
-: getopt w:d:o:t $* || usage
+>/dev/null getopt w:d:o:t $* || usage
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-w) TIMEOUT="$2"; shift; shift ;;

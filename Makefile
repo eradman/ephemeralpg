@@ -1,6 +1,6 @@
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
-RELEASE = 1.5
+RELEASE = 1.6
 
 all: versioncheck pg_tmp getsocket
 
@@ -33,6 +33,6 @@ versioncheck:
 	@head -n3 NEWS | egrep -q "^= Next Release: ${RELEASE}|^== ${RELEASE}: "
 
 clean:
-	rm -f pg_tmp getsocket *.o
+	rm -f pg_tmp getsocket
 
 .PHONY: all clean install uninstall regress versioncheck
