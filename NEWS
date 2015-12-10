@@ -1,6 +1,8 @@
 = Next Release: 1.6
 
  - Exit non-zero if getopt(1) fails
+ - Raise an error early if initdb(1) cannot be found
+ - Run initdb and the stop timer even if postgres fails to start
 
 = Release History
 

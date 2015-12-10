@@ -21,7 +21,7 @@ usage() {
 	exit 1
 }
 
-trap 'printf "$0: exit code $? on line $LINENO\n"; exit 1' ERR \
+trap 'printf "$0: exit code $? on line $LINENO\n" >&2; exit 1' ERR \
 	2> /dev/null || exec bash $0 "$@"
 set +o posix
 
@@ -38,6 +38,7 @@ while [ $# -gt 0 ]; do
 	esac
 done
 
+initdb -V > /dev/null
 PGVER=$(psql -V | sed 's/[^0-9.]*\([0-9]*\)\.\([0-9]*\).*/\1.\2/')
 
 case ${CMD:-start} in
@@ -64,6 +65,8 @@ start)
 		test -O $td/NEW && { TD=$td; break; }
 	done
 	[ -z $TD ] && TD=$($0 initdb)
+	nohup nice -n 19 $0 initdb > /dev/null 2>&1 &
+	nohup $0 -w $TIMEOUT -d $TD stop > $TD/stop.log 2>&1 &
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
@@ -81,8 +84,6 @@ start)
 	done
 	[ $? != 0 ] && { >&2 cat $LOGFILE; exit 1; }
 	[ -t 1 ] && echo "$url" || echo -n "$url"
-	nohup nice -n 19 $0 initdb > null 2>&1 &
-	nohup nice -n 19 $0 -w $TIMEOUT -d $TD stop > $TD/stop.log 2>&1 &
 	;;
 stop)
 	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -rf $TD" EXIT
