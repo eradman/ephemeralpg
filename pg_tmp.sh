@@ -27,12 +27,13 @@ set +o posix
 
 TIMEOUT=60
 USER_OPTS=""
->/dev/null getopt w:d:o:t $* || usage
+>/dev/null getopt w:d:o:p:t $* || usage
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-w) TIMEOUT="$2"; shift; shift ;;
 		-d) TD="$2"; shift; shift ;;
 		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)"; shift ;;
+		-p) PGPORT="$2"; shift ;;
 		-o) USER_OPTS="$2"; shift; shift ;;
 		 *) CMD=$1; shift ;;
 	esac
@@ -66,7 +67,7 @@ start)
 	done
 	[ -z $TD ] && TD=$($0 initdb)
 	nohup nice -n 19 $0 initdb > /dev/null 2>&1 &
-	nohup $0 -w $TIMEOUT -d $TD stop > $TD/stop.log 2>&1 &
+	nohup $0 -w $TIMEOUT -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
@@ -87,7 +88,8 @@ start)
 	;;
 stop)
 	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -rf $TD" EXIT
-	export PGHOST=$TD
+	PGHOST=$TD
+	export PGHOST PGPORT
 	until [ "$connections" == "1" ]; do
 		sleep $TIMEOUT
 		connections=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;')

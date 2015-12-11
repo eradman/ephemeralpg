@@ -1,3 +1,7 @@
+= Next Release: 1.7
+
+ - Properly stop the server that is listening on a TCP port
+
 = Release History
 
 == 1.6: December 12, 2015
