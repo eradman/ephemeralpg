@@ -90,7 +90,8 @@ initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4 -E UNICODE -A trust
   eq status.success?, true
 end
 
-try "Start a new instance" do
+try "Start a new instance with a specified datadir" do
+  `: > #{$systmp}/nohup.trace`
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
@@ -101,6 +102,37 @@ pg_ctl -o -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXX
 sleep 0.1
   eos
   eq status.success?, true
+  # background tasks kicked off by starting an instance
+  nohup = `cat #{$systmp}/nohup.trace | sort`
+  nohup.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nohup, <<-eos
+nohup ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
+nohup nice -n 19 ./pg_tmp initdb
+  eos
+end
+
+try "Start a new instance without a pre-initialized datadir" do
+  `: > #{$systmp}/nohup.trace`
+  cmd = "./pg_tmp start "
+  out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
+  out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
+  out.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  err.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq out, "postgresql://%2Ftmp%2Fephemeralpg.012345/test"
+  eq err, <<-eos
+initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4 -E UNICODE -A trust
+rm #{$systmp}/ephemeralpg.012345/NEW
+pg_ctl -o -s -D #{$systmp}/ephemeralpg.012345/9.4 -l #{$systmp}/ephemeralpg.012345/9.4/postgres.log start
+sleep 0.1
+  eos
+  eq status.success?, true
+  # background tasks kicked off by starting an instance
+  nohup = `cat #{$systmp}/nohup.trace | sort`
+  nohup.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nohup, <<-eos
+nohup ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
+nohup nice -n 19 ./pg_tmp initdb
+  eos
 end
 
 try "Stop a running instance" do
@@ -131,6 +163,7 @@ rm -rf #{$systmp}/ephemeralpg.XXXXXX
   eq status.success?, true
   `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
 end
+
 
 puts "\n#{$tests} tests PASSED"
 
