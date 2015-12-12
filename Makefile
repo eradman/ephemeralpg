@@ -11,6 +11,9 @@ pg_tmp: pg_tmp.sh
 getsocket: getsocket.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${EXTRA_SRC} $< -o $@ ${LDFLAGS}
 
+test: pg_tmp getsocket
+	@ruby ./test.rb
+
 selftest: pg_tmp
 	@/bin/echo "Using `pg_ctl --version`"
 	@./pg_tmp.sh selftest

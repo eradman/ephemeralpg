@@ -1,0 +1,10 @@
+#!/bin/sh
+args=$*
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-V) echo "psql (PostgreSQL) 9.4.4"; exit 0 ;;
+		-c) echo "1"; shift ;; # result of 'SELECT 1'
+	esac
+	shift
+done
+>&2 echo $(basename $0) $args

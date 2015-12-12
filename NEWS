@@ -1,6 +1,7 @@
 = Next Release: 1.7
 
  - Properly stop the server that is listening on a TCP port
+ - More extensive test framework included: 'make test'
 
 = Release History
 
