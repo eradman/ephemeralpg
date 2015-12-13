@@ -11,11 +11,15 @@ def try(descr)
   $test_description = descr
   yield
   delta = "%.3f" % (Time.now - start)
+  # highlight slow tests
+  delta = "\e[7m#{delta}\e[27m" if (Time.now - start) > 0.1
   puts "#{delta}: #{descr}"
 end
 
 def eq(a, b)
-  raise "\"#{$test_description}\"\n#{a} != #{b}" unless a === b
+  _a = "#{a}".gsub /^/, "\e[33m> "
+  _b = "#{b}".gsub /^/, "\e[36m< "
+  raise "\"#{$test_description}\"\n#{_a}\e[39m#{_b}\e[39m" unless b === a
 end
 
 # Setup
@@ -60,7 +64,8 @@ try "Catch unknown options" do
   eq status.success?, false
 end
 
-try "Bogus arguments mixed with valid positional" do cmd = "./pg_tmp -t -z initdb -w 20"
+try "Bogus arguments mixed with valid positional" do
+  cmd = "./pg_tmp -t -z initdb -w 20"
   out, err, status = Open3.capture3(cmd)
   eq err.gsub(/invalid|illegal/,'unknown').gsub('\'', ''),
     "getopt: unknown option -- z\n" + $usage_text
@@ -71,7 +76,7 @@ end
 try "Run with missing Postgres binaries" do
   cmd = "./pg_tmp"
   out, err, status = Open3.capture3({'PATH'=>"/bin:/usr/bin"}, cmd)
-  eq /.+initdb:.+not found/, err
+  eq err, /.+initdb:.+not found/
   eq out.empty?, true
   eq status.success?, false
 end
@@ -183,7 +188,6 @@ rm -rf #{$systmp}/ephemeralpg.XXXXXX
   eq status.success?, true
   `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
 end
-
 
 puts "\n#{$tests} tests PASSED"
 
