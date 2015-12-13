@@ -111,6 +111,26 @@ nohup nice -n 19 ./pg_tmp initdb
   eos
 end
 
+try "Start a new instance on a TCP port using a specified datadir" do
+  `: > #{$systmp}/nohup.trace`
+  cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -t"
+  out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
+  eq out, "postgresql://127.0.0.1:55550/test"
+  eq err, <<-eos
+rm #{$systmp}/ephemeralpg.XXXXXX/NEW
+pg_ctl -o -c listen_addresses='127.0.0.1' -c port=55550 -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4/postgres.log start
+sleep 0.1
+  eos
+  eq status.success?, true
+  # background tasks kicked off by starting an instance
+  nohup = `cat #{$systmp}/nohup.trace | sort`
+  nohup.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nohup, <<-eos
+nohup ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 55550 stop
+nohup nice -n 19 ./pg_tmp initdb
+  eos
+end
+
 try "Start a new instance without a pre-initialized datadir" do
   `: > #{$systmp}/nohup.trace`
   cmd = "./pg_tmp start "
