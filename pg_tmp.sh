@@ -93,6 +93,7 @@ stop)
 	until [ "$connections" == "1" ]; do
 		sleep $TIMEOUT
 		connections=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;')
+		[ "$?" != "0" ] && break
 	done
 	pg_ctl -D $TD/$PGVER stop
 	sleep 2

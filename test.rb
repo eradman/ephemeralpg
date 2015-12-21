@@ -30,7 +30,7 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 1.7\n" +
+    "release: 1.8\n" +
     "usage: pg_tmp [-w timeout] [-t] [-o options]\n"
 
 # TCP port selection
@@ -181,6 +181,23 @@ try "Stop a running instance and remove tmp datadir" do
   eq err, <<-eos
 sleep 60
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
+pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
+sleep 2
+rm -r #{$systmp}/ephemeralpg.XXXXXX
+  eos
+  eq status.success?, true
+  `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
+end
+
+try "Stop a running instance if query fails" do
+  `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
+  `touch #{$systmp}/ephemeralpg.XXXXXX/STOP`
+  cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
+  out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
+  eq out.empty?, true
+  eq err, <<-eos
+sleep 60
+./pg_tmp: exit code 1 on line 95
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 2
 rm -r #{$systmp}/ephemeralpg.XXXXXX

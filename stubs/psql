@@ -1,5 +1,6 @@
 #!/bin/sh
 args=$*
+[ -f $PGHOST/STOP ] && exit 1; # Mimic a connection failure
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-V) echo "psql (PostgreSQL) 9.4.4"; exit 0 ;;
