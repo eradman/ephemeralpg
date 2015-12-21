@@ -21,7 +21,7 @@ usage() {
 	exit 1
 }
 
-trap 'printf "$0: exit code $? on line $LINENO\n" >&2; exit 1' ERR \
+trap 'printf "$0: exit code $? on line $LINENO\n" >&2' ERR \
 	2> /dev/null || exec bash $0 "$@"
 set +o posix
 
@@ -87,7 +87,7 @@ start)
 	[ -t 1 ] && echo "$url" || echo -n "$url"
 	;;
 stop)
-	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -rf $TD" EXIT
+	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -r $TD" EXIT
 	PGHOST=$TD
 	export PGHOST PGPORT
 	until [ "$connections" == "1" ]; do
@@ -99,7 +99,7 @@ stop)
 	;;
 selftest)
 	export SYSTMP=$(mktemp -d /tmp/ephemeralpg-selftest.XXXXXX)
-	trap "rm -rf $SYSTMP" EXIT
+	trap "rm -r $SYSTMP" EXIT
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
 	printf "start " ; url=$($0 -w 3 -o '-c log_temp_files=100' start)

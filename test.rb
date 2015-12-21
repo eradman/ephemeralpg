@@ -183,7 +183,7 @@ sleep 60
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 2
-rm -rf #{$systmp}/ephemeralpg.XXXXXX
+rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true
   `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
