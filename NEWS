@@ -1,6 +1,7 @@
 = Next Release: 1.8
 
  - Stop a running instance if query for open connections fails
+ - Ignore SIGHUP instead of relying on nohup(1)
 
 = Release History
 

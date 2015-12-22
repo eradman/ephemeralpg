@@ -96,7 +96,7 @@ initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4 -E UNICODE -A trust
 end
 
 try "Start a new instance with a specified datadir" do
-  `: > #{$systmp}/nohup.trace`
+  `: > #{$systmp}/nice.trace`
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
@@ -108,16 +108,16 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nohup = `cat #{$systmp}/nohup.trace | sort`
-  nohup.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
-  eq nohup, <<-eos
-nohup ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
-nohup nice -n 19 ./pg_tmp initdb
+  nice = `cat #{$systmp}/nice.trace | sort`
+  nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nice, <<-eos
+nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
+nice ./pg_tmp initdb
   eos
 end
 
 try "Start a new instance on a TCP port using a specified datadir" do
-  `: > #{$systmp}/nohup.trace`
+  `: > #{$systmp}/nice.trace`
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -t"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out, "postgresql://127.0.0.1:55550/test"
@@ -128,16 +128,16 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nohup = `cat #{$systmp}/nohup.trace | sort`
-  nohup.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
-  eq nohup, <<-eos
-nohup ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 55550 stop
-nohup nice -n 19 ./pg_tmp initdb
+  nice = `cat #{$systmp}/nice.trace | sort`
+  nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nice, <<-eos
+nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 55550 stop
+nice ./pg_tmp initdb
   eos
 end
 
 try "Start a new instance without a pre-initialized datadir" do
-  `: > #{$systmp}/nohup.trace`
+  `: > #{$systmp}/nice.trace`
   cmd = "./pg_tmp start "
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
@@ -152,11 +152,11 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nohup = `cat #{$systmp}/nohup.trace | sort`
-  nohup.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
-  eq nohup, <<-eos
-nohup ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
-nohup nice -n 19 ./pg_tmp initdb
+  nice = `cat #{$systmp}/nice.trace | sort`
+  nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nice, <<-eos
+nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
+nice ./pg_tmp initdb
   eos
 end
 
@@ -168,7 +168,7 @@ try "Stop a running instance" do
 sleep 60
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
-sleep 2
+sleep 1
   eos
   eq status.success?, true
 end
@@ -182,7 +182,7 @@ try "Stop a running instance and remove tmp datadir" do
 sleep 60
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
-sleep 2
+sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true
@@ -199,7 +199,7 @@ try "Stop a running instance if query fails" do
 sleep 60
 ./pg_tmp: exit code 1 on line 100
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
-sleep 2
+sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true

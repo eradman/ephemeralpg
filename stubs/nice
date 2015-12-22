@@ -1,0 +1,3 @@
+#!/bin/sh
+shift; shift # -n 19
+echo $(basename $0) $* >> $SYSTMP/nice.trace

@@ -1,4 +1,0 @@
-#!/bin/sh
-echo "sending output to nohup.out"
-echo "sending output to nohup.err" 1>&2
-echo $(basename $0) $* >> $SYSTMP/nohup.trace

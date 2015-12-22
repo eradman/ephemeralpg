@@ -23,6 +23,7 @@ usage() {
 
 trap 'printf "$0: exit code $? on line $LINENO\n" >&2' ERR \
 	2> /dev/null || exec bash $0 "$@"
+trap '' HUP
 set +o posix
 
 TIMEOUT=60
@@ -67,8 +68,8 @@ start)
 		test -O $td/NEW && { TD=$td; break; }
 	done
 	[ -z $TD ] && TD=$($0 initdb)
-	nohup nice -n 19 $0 initdb > /dev/null 2>&1 &
-	nohup $0 -w $TIMEOUT -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
+	nice -n 19 $0 initdb > /dev/null  &
+	nice -n 19 $0 -w $TIMEOUT -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
@@ -97,7 +98,7 @@ stop)
 		[ "$?" != "0" ] && break
 	done
 	pg_ctl -D $TD/$PGVER stop
-	sleep 2
+	sleep 1
 	;;
 selftest)
 	export SYSTMP=$(mktemp -d /tmp/ephemeralpg-selftest.XXXXXX)
