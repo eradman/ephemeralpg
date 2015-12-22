@@ -30,13 +30,14 @@ USER_OPTS=""
 >/dev/null getopt w:d:o:p:t $* || usage
 while [ $# -gt 0 ]; do
 	case "$1" in
-		-w) TIMEOUT="$2"; shift; shift ;;
-		-d) TD="$2"; shift; shift ;;
-		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)"; shift ;;
-		-p) PGPORT="$2"; shift ;;
-		-o) USER_OPTS="$2"; shift; shift ;;
-		 *) CMD=$1; shift ;;
+		-w) TIMEOUT="$2"; shift ;;
+		-d) TD="$2"; shift ;;
+		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)" ;;
+		-p) PGPORT="$2" ;;
+		-o) USER_OPTS="$2"; shift ;;
+		 *) CMD=$1 ;;
 	esac
+	shift
 done
 
 initdb -V > /dev/null

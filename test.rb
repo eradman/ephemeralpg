@@ -195,9 +195,9 @@ try "Stop a running instance if query fails" do
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
   eq out.empty?, true
-  eq err, <<-eos
+  eq err.gsub(/on line \d+/, 'on line 100'), <<-eos
 sleep 60
-./pg_tmp: exit code 1 on line 95
+./pg_tmp: exit code 1 on line 100
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 2
 rm -r #{$systmp}/ephemeralpg.XXXXXX
