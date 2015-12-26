@@ -21,7 +21,7 @@ usage() {
 	exit 1
 }
 
-trap 'printf "$0: exit code $? on line $LINENO\n" >&2' ERR \
+trap 'printf "$0: exit code $? on line $LINENO\n" >&2; exit 1' ERR \
 	2> /dev/null || exec bash $0 "$@"
 trap '' HUP
 set +o posix
@@ -92,10 +92,9 @@ stop)
 	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -r $TD" EXIT
 	PGHOST=$TD
 	export PGHOST PGPORT
-	until [ "$connections" == "1" ]; do
+	until [ "${count:-2}" -lt "2" ]; do
 		sleep $TIMEOUT
-		connections=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;')
-		[ "$?" != "0" ] && break
+		count=$(psql -At -c 'SELECT count(*) FROM pg_stat_activity;' || echo 0)
 	done
 	pg_ctl -D $TD/$PGVER stop
 	sleep 1

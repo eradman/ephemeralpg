@@ -162,11 +162,11 @@ end
 
 try "Stop a running instance" do
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
-  out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
+  out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err, <<-eos
 sleep 60
-psql test -At -c SELECT count(*) FROM pg_stat_activity;
+psql -At -c SELECT count(*) FROM pg_stat_activity;
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
   eos
@@ -176,11 +176,11 @@ end
 try "Stop a running instance and remove tmp datadir" do
   `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
-  out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
+  out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err, <<-eos
 sleep 60
-psql test -At -c SELECT count(*) FROM pg_stat_activity;
+psql -At -c SELECT count(*) FROM pg_stat_activity;
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
@@ -197,7 +197,6 @@ try "Stop a running instance if query fails" do
   eq out.empty?, true
   eq err.gsub(/on line \d+/, 'on line 100'), <<-eos
 sleep 60
-./pg_tmp: exit code 1 on line 100
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
