@@ -28,7 +28,7 @@ set +o posix
 
 TIMEOUT=60
 USER_OPTS=""
->/dev/null getopt w:d:o:p:t $* || usage
+>/dev/null getopt w:d:o:p:t "$@" || usage
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-w) TIMEOUT="$2"; shift ;;

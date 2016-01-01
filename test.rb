@@ -95,15 +95,16 @@ initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4 -E UNICODE -A trust
   eq status.success?, true
 end
 
-try "Start a new instance with a specified datadir" do
+try "Start a new instance with a specified datadir and multiple options" do
   `: > #{$systmp}/nice.trace`
-  cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX"
+  cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -o '-c track_commit_timestamp=true -c shared_buffers = 12MB'"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
   eq out, "postgresql://%2Ftmp%2Fephemeralpg.XXXXXX/test"
   eq err, <<-eos
 rm #{$systmp}/ephemeralpg.XXXXXX/NEW
-pg_ctl -o -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4/postgres.log start
+pg_ctl -o " -c track_commit_timestamp=true -c shared_buffers = 12MB"\
+ -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4/postgres.log start
 sleep 0.1
   eos
   eq status.success?, true
@@ -123,7 +124,8 @@ try "Start a new instance on a TCP port using a specified datadir" do
   eq out, "postgresql://127.0.0.1:55550/test"
   eq err, <<-eos
 rm #{$systmp}/ephemeralpg.XXXXXX/NEW
-pg_ctl -o -c listen_addresses='127.0.0.1' -c port=55550 -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4/postgres.log start
+pg_ctl -o "-c listen_addresses='127.0.0.1' -c port=55550 "\
+ -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4/postgres.log start
 sleep 0.1
   eos
   eq status.success?, true
@@ -147,7 +149,7 @@ try "Start a new instance without a pre-initialized datadir" do
   eq err, <<-eos
 initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4 -E UNICODE -A trust
 rm #{$systmp}/ephemeralpg.012345/NEW
-pg_ctl -o -s -D #{$systmp}/ephemeralpg.012345/9.4 -l #{$systmp}/ephemeralpg.012345/9.4/postgres.log start
+pg_ctl -o " " -s -D #{$systmp}/ephemeralpg.012345/9.4 -l #{$systmp}/ephemeralpg.012345/9.4/postgres.log start
 sleep 0.1
   eos
   eq status.success?, true

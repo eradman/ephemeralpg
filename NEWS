@@ -2,6 +2,7 @@
 
  - Stop a running instance if query for open connections fails
  - Ignore SIGHUP instead of relying on nohup(1)
+ - Properly support multiple options to using the flag '-o'
 
 = Release History
 
