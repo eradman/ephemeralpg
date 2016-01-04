@@ -94,7 +94,7 @@ stop)
 	export PGHOST PGPORT
 	until [ "${count:-2}" -lt "2" ]; do
 		sleep $TIMEOUT
-		count=$(psql -At -c 'SELECT count(*) FROM pg_stat_activity;' || echo 0)
+		count=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;' || echo 0)
 	done
 	pg_ctl -D $TD/$PGVER stop
 	sleep 1
