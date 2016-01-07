@@ -1,3 +1,7 @@
+= Next Release: 1.9
+
+ - Unbreak directory cleanup with PG 9.3
+
 = Release History
 
 == 1.8: January 05, 2016

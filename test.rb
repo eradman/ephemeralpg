@@ -30,7 +30,7 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 1.8\n" +
+    "release: 1.9\n" +
     "usage: pg_tmp [-w timeout] [-t] [-o options]\n"
 
 # TCP port selection
@@ -176,7 +176,7 @@ sleep 1
 end
 
 try "Stop a running instance and remove tmp datadir" do
-  `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
+  `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.conf`
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
@@ -188,11 +188,11 @@ sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true
-  `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
+  `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.conf`
 end
 
 try "Stop a running instance if query fails" do
-  `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
+  `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.conf`
   `touch #{$systmp}/ephemeralpg.XXXXXX/STOP`
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
@@ -204,7 +204,7 @@ sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true
-  `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.auto.conf`
+  `rm #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.conf`
 end
 
 puts "\n#{$tests} tests PASSED"

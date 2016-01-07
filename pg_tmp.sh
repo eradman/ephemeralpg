@@ -89,7 +89,7 @@ start)
 	[ -t 1 ] && echo "$url" || echo -n "$url"
 	;;
 stop)
-	trap "test -O $TD/$PGVER/postgresql.auto.conf && rm -r $TD" EXIT
+	trap "test -O $TD/$PGVER/postgresql.conf && rm -r $TD" EXIT
 	PGHOST=$TD
 	export PGHOST PGPORT
 	until [ "${count:-2}" -lt "2" ]; do
