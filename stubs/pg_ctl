@@ -2,10 +2,10 @@
 >&2 printf $(basename $0)
 
 # Print each argument with quotes if it would otherwise be split by a space
-function one_arg { [ $# -eq 1 ]; }
+one_arg () { [ $# -eq 1 ]; }
 while [ $# -gt 0 ]; do
 	one_arg $1
-	[ $? == 0 ] && >&2 printf " $1" || >&2 printf " \"$1\""
+	[ $? -eq 0 ] && >&2 printf " $1" || >&2 printf " \"$1\""
 	shift
 done
 >&2 echo
