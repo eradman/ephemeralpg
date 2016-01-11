@@ -1,6 +1,7 @@
 = Next Release: 1.9
 
  - Unbreak directory cleanup with PG 9.3
+ - Turn off synchronous_commit by default
 
 = Release History
 

@@ -53,6 +53,7 @@ initdb)
 	    listen_addresses = ''
 	    shared_buffers = 12MB
 	    fsync = off
+	    synchronous_commit = off
 	    full_page_writes = off
 	    log_min_duration_statement = 0
 	    log_connections = on
