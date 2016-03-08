@@ -80,7 +80,7 @@ start)
 	if [ -n "$PGPORT" ]; then
 		url="postgresql://$LISTENTO:$PGPORT/test"
 	else
-		url="postgresql://$(echo $PGHOST | sed 's:/:%2F:g')/test"
+		url="postgresql:///test?host=$(echo $PGHOST | sed 's:/:%2F:g')"
 	fi
 	for n in 1 2 3 4 5; do
 		sleep 0.1

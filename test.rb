@@ -100,7 +100,7 @@ try "Start a new instance with a specified datadir and multiple options" do
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -o '-c track_commit_timestamp=true -c shared_buffers = 12MB'"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
-  eq out, "postgresql://%2Ftmp%2Fephemeralpg.XXXXXX/test"
+  eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX"
   eq err, <<-eos
 rm #{$systmp}/ephemeralpg.XXXXXX/NEW
 pg_ctl -o " -c track_commit_timestamp=true -c shared_buffers = 12MB"\
@@ -145,7 +145,7 @@ try "Start a new instance without a pre-initialized datadir" do
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
   out.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   err.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
-  eq out, "postgresql://%2Ftmp%2Fephemeralpg.012345/test"
+  eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.012345"
   eq err, <<-eos
 initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4 -E UNICODE -A trust
 rm #{$systmp}/ephemeralpg.012345/NEW

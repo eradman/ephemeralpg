@@ -2,6 +2,7 @@
 
  - Unbreak directory cleanup with PG 9.3
  - Turn off synchronous_commit by default
+ - Unix sockets are specified using ?host= for compatibility with SQLAlchemy
 
 = Release History
 
