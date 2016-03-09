@@ -17,7 +17,7 @@
 usage() {
 	prog=$(basename $0)
 	>&2 echo "release: ${release}"
-	>&2 echo "usage: ${prog} [-w timeout] [-t] [-o options]"
+	>&2 echo "usage: ${prog} [-w timeout] [-t] [-o options] [-d datadir]"
 	exit 1
 }
 
@@ -26,7 +26,6 @@ trap 'printf "$0: exit code $? on line $LINENO\n" >&2; exit 1' ERR \
 trap '' HUP
 set +o posix
 
-TIMEOUT=60
 USER_OPTS=""
 >/dev/null getopt w:d:o:p:t "$@" || usage
 while [ $# -gt 0 ]; do
@@ -34,7 +33,7 @@ while [ $# -gt 0 ]; do
 		-w) TIMEOUT="$2"; shift ;;
 		-d) TD="$2"; shift ;;
 		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)" ;;
-		-p) PGPORT="$2" ;;
+		-p) PGPORT="$2" shift ;;
 		-o) USER_OPTS="$2"; shift ;;
 		 *) CMD=$1 ;;
 	esac
@@ -46,7 +45,8 @@ PGVER=$(psql -V | sed 's/[^0-9.]*\([0-9]*\)\.\([0-9]*\).*/\1.\2/')
 
 case ${CMD:-start} in
 initdb)
-	TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg.XXXXXX)"
+	[ -z $TD ] || mkdir -p $TD
+	[ -z $TD ] && TD="$(mktemp -d ${SYSTMP:-/tmp}/ephemeralpg.XXXXXX)"
 	initdb --nosync -D $TD/$PGVER -E UNICODE -A trust > $TD/initdb.out
 	cat <<-EOF >> $TD/$PGVER/postgresql.conf
 	    unix_socket_directories = '$TD'
@@ -64,13 +64,19 @@ initdb)
 	;;
 start)
 	# Find a temporary database directory owned by the current user
-	for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg.*/$PGVER 2> /dev/null); do
-		td=$(dirname "$d")
-		test -O $td/NEW && { TD=$td; break; }
-	done
-	[ -z $TD ] && TD=$($0 initdb)
+	# If no existing direcotry is found or if an empty directory was
+        # specified initialize a new database
+	if [ -z $TD ]; then
+		for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg.*/$PGVER 2> /dev/null); do
+			td=$(dirname "$d")
+			test -O $td/NEW && { TD=$td; break; }
+		done
+		[ -z $TD ] && TD=$($0 initdb)
+	else
+		[ -d $TD/$PGVER ] || TD=$($0 initdb -d $TD)
+        fi
 	nice -n 19 $0 initdb > /dev/null  &
-	nice -n 19 $0 -w $TIMEOUT -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
+	nice -n 19 $0 -w ${TIMEOUT:-60} -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
@@ -90,11 +96,15 @@ start)
 	[ -t 1 ] && echo "$url" || echo -n "$url"
 	;;
 stop)
-	trap "test -O $TD/$PGVER/postgresql.conf && rm -r $TD" EXIT
+	[ -O "$TD/$PGVER/postgresql.conf" ] || {
+		>&2 echo "Please specify a PostgreSQL data directory using -d"
+		exit 1
+	}
+	trap "rm -r $TD" EXIT
 	PGHOST=$TD
 	export PGHOST PGPORT
 	until [ "${count:-2}" -lt "2" ]; do
-		sleep $TIMEOUT
+		sleep ${TIMEOUT:-1}
 		count=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;' || echo 0)
 	done
 	pg_ctl -D $TD/$PGVER stop

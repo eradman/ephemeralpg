@@ -30,8 +30,8 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 1.9\n" +
-    "usage: pg_tmp [-w timeout] [-t] [-o options]\n"
+    "release: 2.0\n" +
+    "usage: pg_tmp [-w timeout] [-t] [-o options] [-d datadir]\n"
 
 # TCP port selection
 
@@ -163,21 +163,23 @@ nice ./pg_tmp initdb
 end
 
 try "Stop a running instance" do
+  `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.conf`
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err, <<-eos
-sleep 60
+sleep 1
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
+rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true
 end
 
 try "Stop a running instance and remove tmp datadir" do
   `touch #{$systmp}/ephemeralpg.XXXXXX/9.4/postgresql.conf`
-  cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
+  cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX -w 60"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err, <<-eos
@@ -198,7 +200,7 @@ try "Stop a running instance if query fails" do
   out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err.gsub(/on line \d+/, 'on line 100'), <<-eos
-sleep 60
+sleep 1
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX

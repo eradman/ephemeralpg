@@ -1,3 +1,8 @@
+= Next Release: 2.0
+
+- Allow a temporary directory to be used in combination with the optional
+  arguments 'initdb', 'start', and 'stop'
+
 = Release History
 
 == 1.9: March 09, 2016
