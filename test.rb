@@ -113,7 +113,6 @@ sleep 0.1
   nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq nice, <<-eos
 nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
-nice ./pg_tmp initdb
   eos
 end
 
@@ -134,7 +133,6 @@ sleep 0.1
   nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq nice, <<-eos
 nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 55550 stop
-nice ./pg_tmp initdb
   eos
 end
 
@@ -168,7 +166,7 @@ try "Stop a running instance" do
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err, <<-eos
-sleep 1
+sleep 0
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
@@ -200,7 +198,7 @@ try "Stop a running instance if query fails" do
   out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err.gsub(/on line \d+/, 'on line 100'), <<-eos
-sleep 1
+sleep 0
 pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX

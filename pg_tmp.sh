@@ -63,19 +63,19 @@ initdb)
 	echo $TD
 	;;
 start)
-	# Find a temporary database directory owned by the current user
-	# If no existing direcotry is found or if an empty directory was
-        # specified initialize a new database
+	# 1. Find a temporary database directory owned by the current user
+	# 2. Create a new datadir if nothing was found
+	# 3. Launch a background task to create a datadir for future invocations
 	if [ -z $TD ]; then
 		for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg.*/$PGVER 2> /dev/null); do
 			td=$(dirname "$d")
 			test -O $td/NEW && { TD=$td; break; }
 		done
 		[ -z $TD ] && TD=$($0 initdb)
+		nice -n 19 $0 initdb > /dev/null &
 	else
 		[ -d $TD/$PGVER ] || TD=$($0 initdb -d $TD)
-        fi
-	nice -n 19 $0 initdb > /dev/null  &
+	fi
 	nice -n 19 $0 -w ${TIMEOUT:-60} -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
@@ -96,7 +96,7 @@ start)
 	[ -t 1 ] && echo "$url" || echo -n "$url"
 	;;
 stop)
-	[ -O "$TD/$PGVER/postgresql.conf" ] || {
+	[ -O $TD/$PGVER/postgresql.conf ] || {
 		>&2 echo "Please specify a PostgreSQL data directory using -d"
 		exit 1
 	}
@@ -104,7 +104,7 @@ stop)
 	PGHOST=$TD
 	export PGHOST PGPORT
 	until [ "${count:-2}" -lt "2" ]; do
-		sleep ${TIMEOUT:-1}
+		sleep ${TIMEOUT:-0}
 		count=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;' || echo 0)
 	done
 	pg_ctl -D $TD/$PGVER stop

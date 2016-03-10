@@ -2,6 +2,7 @@
 
 - Allow a temporary directory to be used in combination with the optional
   arguments 'initdb', 'start', and 'stop'
+- 'stop' only sleeps if if '-w' was specified
 
 = Release History
 
