@@ -11,27 +11,6 @@ the `-w` option (the default is 60).
 initializing a database in the background that is used by subsequent
 invocations.
 
-Examples
---------
-
-*Shell*
-
-    uri=$(pg_tmp)
-    echo "Using $uri"
-    psql $uri -c 'select now()'
-
-*Python*
-
-    import psycopg2
-    from subprocess import check_output
-    
-    url = check_output(["pg_tmp"])
-    with psycopg2.connect(url) as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("select now();")
-            print(cursor.fetchone()[0])
-
-
 Installation
 ------------
 
@@ -40,6 +19,19 @@ Installation
 Or to specify a specific installation location
 
     PREFIX=$HOME/local make install
+
+Examples from `man pg_tmp`
+-------------------------
+
+Create a temporary database and run a query:
+
+    uri=$(pg_tmp)
+    psql $uri -f my.sql
+
+Start a temporary server with a custom extension:
+
+    uri=$(pg_tmp -o "-c shared_preload_libraries=$PWD/auth_hook")
+    psql $uri -c "SELECT 1"
 
 Requirements
 ------------
