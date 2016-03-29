@@ -1,7 +1,7 @@
 Ephemeral PostgreSQL
 ====================
 
-Run tests on an isolated, temporary Postgres database.
+Run tests on an isolated, temporary PostgreSQL database.
 
 Temporary database created with `pg_tmp` have a limited shared memory footprint
 and are automatically garbage-collected after the number of seconds specified by
@@ -11,14 +11,19 @@ the `-w` option (the default is 60).
 initializing a database in the background that is used by subsequent
 invocations.
 
-Installation
-------------
+Installation - BSD, Mac OS, and Linux
+-------------------------------------
 
     make install
 
 Or to specify a specific installation location
 
     PREFIX=$HOME/local make install
+
+Installation - Mac OS/Homebrew
+------------------------------
+
+    brew install ephemeralpg
 
 Examples from `man pg_tmp`
 -------------------------
