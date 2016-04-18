@@ -16,7 +16,7 @@
 
  - Stop a running instance if query for open connections fails
  - Ignore SIGHUP instead of relying on nohup(1)
- - Properly support multiple options to using the flag '-o'
+ - Properly support multiple extra-options to using the flag '-o'
 
 == 1.7: December 12, 2015
 
@@ -31,7 +31,7 @@
 
 == 1.5: December 01, 2015
 
- - Allow options to be passed directly to postgres(1) on start using '-o'
+ - Allow extra-options to be passed directly to postgres(1) on start using '-o'
  - Copy log to STDERR and exit non-zero if server startup fails
 
 == 1.4: October 30, 2015

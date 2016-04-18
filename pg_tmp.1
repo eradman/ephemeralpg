@@ -13,7 +13,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd March 9, 2016
+.Dd April 18, 2016
 .Dt PG_TMP 1
 .Os
 .Sh NAME
@@ -23,7 +23,7 @@
 .Nm pg_tmp
 .Op Fl w Ar timeout
 .Op Fl t
-.Op Fl o Ar options
+.Op Fl o Ar extra-options
 .Op Fl d Ar datadir
 .Sh DESCRIPTION
 The
@@ -49,9 +49,11 @@ Use a TCP port selected by
 bound to 127.0.0.1.
 Otherwise the path to a Unix socket is returned.
 .It Fl o
-Specifies options to be passed directly to the postgres command.
-The options should usually be surrounded by single or double quotes to ensure
-that they are passed through as a group.
+Specifies extra-options to be passed directly to the
+.Xr postgres 1
+binary.
+These options should usually be surrounded by quotes to ensure that they are
+passed through as a group.
 .It Fl d
 Specify the temporary directory to use.
 May be combined with the optional arguments

@@ -31,7 +31,7 @@ at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
     "release: 2.0\n" +
-    "usage: pg_tmp [-w timeout] [-t] [-o options] [-d datadir]\n"
+    "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]\n"
 
 # TCP port selection
 
