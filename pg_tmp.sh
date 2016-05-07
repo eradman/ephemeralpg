@@ -15,9 +15,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 usage() {
-	prog=$(basename $0)
 	>&2 echo "release: ${release}"
-	>&2 echo "usage: ${prog} [-w timeout] [-t] [-o extra-options] [-d datadir]"
+	>&2 echo "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]"
 	exit 1
 }
 
