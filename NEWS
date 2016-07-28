@@ -1,3 +1,7 @@
+= Next Release: 2.1
+
+ - Fix build for getsocket(1) on FreeBSD
+
 = Release History
 
 == 2.0: March 29, 2016
