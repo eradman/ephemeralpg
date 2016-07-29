@@ -25,6 +25,11 @@ Installation - Mac OS/Homebrew
 
     brew install ephemeralpg
 
+Installation - SmartOS/Solaris
+------------------------------
+
+    LDFLAGS='-lsocket -lnsl' make install
+
 Examples from `man pg_tmp`
 -------------------------
 
