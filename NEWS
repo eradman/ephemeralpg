@@ -1,8 +1,9 @@
-= Next Release: 2.1
+= Release History
+
+== 2.1: October 31, 2016
 
  - Fix build for getsocket(1) on FreeBSD
-
-= Release History
+ - Add instructions for building getsocket(1) on Solaris
 
 == 2.0: March 29, 2016
 
