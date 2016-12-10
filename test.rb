@@ -30,7 +30,7 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 2.1\n" +
+    "release: 2.2\n" +
     "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]\n"
 
 # TCP port selection
@@ -120,7 +120,7 @@ try "Start a new instance on a TCP port using a specified datadir" do
   `: > #{$systmp}/nice.trace`
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -t"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
-  eq out, "postgresql://127.0.0.1:55550/test"
+  eq out, "postgresql://user11@127.0.0.1:55550/test"
   eq err, <<-eos
 rm #{$systmp}/ephemeralpg.XXXXXX/NEW
 pg_ctl -o "-c listen_addresses='127.0.0.1' -c port=55550 "\

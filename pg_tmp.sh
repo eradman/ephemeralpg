@@ -83,7 +83,7 @@ start)
 	PGHOST=$TD
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
-		url="postgresql://$LISTENTO:$PGPORT/test"
+		url="postgresql://$(whoami)@$LISTENTO:$PGPORT/test"
 	else
 		url="postgresql:///test?host=$(echo $PGHOST | sed 's:/:%2F:g')"
 	fi
