@@ -1,8 +1,8 @@
-= Next Release: 2.2
+= Release History
+
+== 2.2: December 13, 2016
 
  - Include username in URL when '-t' is specified
-
-= Release History
 
 == 2.1: October 31, 2016
 
