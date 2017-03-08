@@ -30,8 +30,8 @@ Installation - SmartOS/Solaris
 
     LDFLAGS='-lsocket -lnsl' make install
 
-Examples from `man pg_tmp`
--------------------------
+Man Page Examples
+-----------------
 
 Create a temporary database and run a query:
 
@@ -53,13 +53,13 @@ News
 ----
 
 A release history as well as features in the upcoming release are covered in the
-[NEWS][NEWS] file.
+[NEWS] file.
 
 License
 -------
 
-Source is under and ISC-style license. See the [LICENSE][LICENSE] file for more
-detailed information on the license used for compatibility libraries.
+Source is under and ISC-style license. See the [LICENSE] file for more detailed
+information on the license used for compatibility libraries.
 
 [NEWS]: http://www.bitbucket.org/eradman/ephemeralpg/src/default/NEWS
 [LICENSE]: http://www.bitbucket.org/eradman/ephemeralpg/src/default/LICENSE
