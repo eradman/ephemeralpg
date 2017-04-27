@@ -30,7 +30,7 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 2.2\n" +
+    "release: 2.3\n" +
     "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]\n"
 
 # TCP port selection
@@ -103,7 +103,7 @@ try "Start a new instance with a specified datadir and multiple options" do
   eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX"
   eq err, <<-eos
 rm #{$systmp}/ephemeralpg.XXXXXX/NEW
-pg_ctl -o " -c track_commit_timestamp=true -c shared_buffers = 12MB"\
+pg_ctl -W -o " -c track_commit_timestamp=true -c shared_buffers = 12MB"\
  -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4/postgres.log start
 sleep 0.1
   eos
@@ -123,7 +123,7 @@ try "Start a new instance on a TCP port using a specified datadir" do
   eq out, "postgresql://user11@127.0.0.1:55550/test"
   eq err, <<-eos
 rm #{$systmp}/ephemeralpg.XXXXXX/NEW
-pg_ctl -o "-c listen_addresses='127.0.0.1' -c port=55550 "\
+pg_ctl -W -o "-c listen_addresses='127.0.0.1' -c port=55550 "\
  -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4/postgres.log start
 sleep 0.1
   eos
@@ -147,7 +147,7 @@ try "Start a new instance without a pre-initialized datadir" do
   eq err, <<-eos
 initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4 -E UNICODE -A trust
 rm #{$systmp}/ephemeralpg.012345/NEW
-pg_ctl -o " " -s -D #{$systmp}/ephemeralpg.012345/9.4 -l #{$systmp}/ephemeralpg.012345/9.4/postgres.log start
+pg_ctl -W -o " " -s -D #{$systmp}/ephemeralpg.012345/9.4 -l #{$systmp}/ephemeralpg.012345/9.4/postgres.log start
 sleep 0.1
   eos
   eq status.success?, true
@@ -168,7 +168,7 @@ try "Stop a running instance" do
   eq err, <<-eos
 sleep 0
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
-pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
+pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
@@ -183,7 +183,7 @@ try "Stop a running instance and remove tmp datadir" do
   eq err, <<-eos
 sleep 60
 psql test -At -c SELECT count(*) FROM pg_stat_activity;
-pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
+pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
@@ -199,7 +199,7 @@ try "Stop a running instance if query fails" do
   eq out.empty?, true
   eq err.gsub(/on line \d+/, 'on line 100'), <<-eos
 sleep 0
-pg_ctl -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
+pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/9.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos

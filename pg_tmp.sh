@@ -79,7 +79,7 @@ start)
 	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
-	pg_ctl -o "$OPTS $USER_OPTS" -s -D $TD/$PGVER -l $LOGFILE start
+	pg_ctl -W -o "$OPTS $USER_OPTS" -s -D $TD/$PGVER -l $LOGFILE start
 	PGHOST=$TD
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then
@@ -106,7 +106,7 @@ stop)
 		sleep ${TIMEOUT:-0}
 		count=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;' || echo 0)
 	done
-	pg_ctl -D $TD/$PGVER stop
+	pg_ctl -W -D $TD/$PGVER stop
 	sleep 1
 	;;
 selftest)
