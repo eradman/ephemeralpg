@@ -1,6 +1,7 @@
 = Next Release: 2.3
 
  - Allow version strings such as "10beta1"
+ - Use still-alive query compatible with 10 and 9.x
 
 = Release History
 

@@ -102,9 +102,10 @@ stop)
 	trap "rm -r $TD" EXIT
 	PGHOST=$TD
 	export PGHOST PGPORT
+	q="SELECT count(*) FROM pg_stat_activity WHERE datname='test';"
 	until [ "${count:-2}" -lt "2" ]; do
 		sleep ${TIMEOUT:-0}
-		count=$(psql test -At -c 'SELECT count(*) FROM pg_stat_activity;' || echo 0)
+		count=$(psql test -At -c "$q" || echo 0)
 	done
 	pg_ctl -W -D $TD/$PGVER stop
 	sleep 1
