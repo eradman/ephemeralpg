@@ -40,7 +40,7 @@ while [ $# -gt 0 ]; do
 done
 
 initdb -V > /dev/null
-PGVER=$(psql -V | sed 's/[^0-9.]*\([0-9]*\)\.\([0-9]*\).*/\1.\2/')
+PGVER=$(psql -V | awk '{print $NF}')
 
 case ${CMD:-start} in
 initdb)
