@@ -1,9 +1,9 @@
-= Next Release: 2.3
-
- - Allow version strings such as "10beta1"
- - Use still-alive query compatible with 10 and 9.x
-
 = Release History
+
+== 2.3: August 11, 2017
+
+ - Allow irregular version strings such as "10beta3"
+ - Use still-alive query compatible with 10 and 9.x
 
 == 2.2: December 13, 2016
 
