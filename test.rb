@@ -30,7 +30,7 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 2.3\n" +
+    "release: 2.4\n" +
     "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]\n"
 
 # TCP port selection
@@ -167,7 +167,7 @@ try "Stop a running instance" do
   eq out.empty?, true
   eq err, <<-eos
 sleep 0
-psql test -At -c SELECT count(*) FROM pg_stat_activity WHERE datname='test';
+psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname='test';
 pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
@@ -182,7 +182,7 @@ try "Stop a running instance and remove tmp datadir" do
   eq out.empty?, true
   eq err, <<-eos
 sleep 60
-psql test -At -c SELECT count(*) FROM pg_stat_activity WHERE datname='test';
+psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname='test';
 pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX

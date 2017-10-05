@@ -1,6 +1,6 @@
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
-RELEASE = 2.3
+RELEASE = 2.4
 
 all: versioncheck pg_tmp getsocket
 

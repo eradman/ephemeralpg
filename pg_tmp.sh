@@ -105,7 +105,7 @@ stop)
 	q="SELECT count(*) FROM pg_stat_activity WHERE datname='test';"
 	until [ "${count:-2}" -lt "2" ]; do
 		sleep ${TIMEOUT:-0}
-		count=$(psql test -At -c "$q" || echo 0)
+		count=$(psql test --no-psqlrc -At -c "$q" || echo 0)
 	done
 	pg_ctl -W -D $TD/$PGVER stop
 	sleep 1
@@ -116,7 +116,7 @@ selftest)
 	printf "Running: "
 	printf "initdb "; dir=$($0 initdb)
 	printf "start " ; url=$($0 -w 3 -o '-c log_temp_files=100' start)
-	printf "psql "  ; [ "$(psql -At -c 'select 5' $url)" == "5" ]
+	printf "psql "  ; [ "$(psql --no-psqlrc -At -c 'select 5' $url)" == "5" ]
 	printf "stop "  ; sleep 10
 	printf "verify "; ! [ -d dir ]
 	echo; echo "OK"
