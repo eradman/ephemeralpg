@@ -102,7 +102,6 @@ try "Start a new instance with a specified datadir and multiple options" do
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
   eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX"
   eq err, <<-eos
-rm #{$systmp}/ephemeralpg.XXXXXX/NEW
 pg_ctl -W -o " -c track_commit_timestamp=true -c shared_buffers = 12MB"\
  -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgres.log start
 sleep 0.1
@@ -122,7 +121,6 @@ try "Start a new instance on a TCP port using a specified datadir" do
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out, "postgresql://user11@127.0.0.1:55550/test"
   eq err, <<-eos
-rm #{$systmp}/ephemeralpg.XXXXXX/NEW
 pg_ctl -W -o "-c listen_addresses='127.0.0.1' -c port=55550 "\
  -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgres.log start
 sleep 0.1
@@ -146,7 +144,6 @@ try "Start a new instance without a pre-initialized datadir" do
   eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.012345"
   eq err, <<-eos
 initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4.4 -E UNICODE -A trust
-rm #{$systmp}/ephemeralpg.012345/NEW
 pg_ctl -W -o " " -s -D #{$systmp}/ephemeralpg.012345/9.4.4 -l #{$systmp}/ephemeralpg.012345/9.4.4/postgres.log start
 sleep 0.1
   eos

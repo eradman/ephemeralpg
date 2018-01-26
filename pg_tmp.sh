@@ -68,7 +68,7 @@ start)
 	if [ -z $TD ]; then
 		for d in $(ls -d ${SYSTMP:-/tmp}/ephemeralpg.*/$PGVER 2> /dev/null); do
 			td=$(dirname "$d")
-			test -O $td/NEW && { TD=$td; break; }
+			test -O $td/NEW && rm $td/NEW 2> /dev/null && { TD=$td; break; }
 		done
 		[ -z $TD ] && TD=$($0 initdb)
 		nice -n 19 $0 initdb > /dev/null &
@@ -76,7 +76,6 @@ start)
 		[ -d $TD/$PGVER ] || TD=$($0 initdb -d $TD)
 	fi
 	nice -n 19 $0 -w ${TIMEOUT:-60} -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
-	rm $TD/NEW
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
 	pg_ctl -W -o "$OPTS $USER_OPTS" -s -D $TD/$PGVER -l $LOGFILE start

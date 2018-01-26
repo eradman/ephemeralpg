@@ -1,6 +1,7 @@
 = Next Release: 2.4
 
 - Ignore .psqlrc to prevent indeterminate behaviors
+- Guard against race condition if pg_tmp is executed concurrently
 
 = Release History
 
