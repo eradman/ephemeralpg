@@ -1,9 +1,9 @@
-= Next Release: 2.4
+= Release History
+
+== 2.4: February 02, 2018
 
 - Ignore .psqlrc to prevent indeterminate behaviors
 - Guard against race condition if pg_tmp is executed concurrently
-
-= Release History
 
 == 2.3: August 11, 2017
 
