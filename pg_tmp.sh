@@ -73,7 +73,7 @@ start)
 		[ -z $TD ] && TD=$($0 initdb)
 		nice -n 19 $0 initdb > /dev/null &
 	else
-		[ -d $TD/$PGVER ] || TD=$($0 initdb -d $TD)
+		[ -O $TD/$PGVER ] || TD=$($0 initdb -d $TD)
 	fi
 	nice -n 19 $0 -w ${TIMEOUT:-60} -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"

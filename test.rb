@@ -30,7 +30,7 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 2.4\n" +
+    "release: 2.5\n" +
     "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]\n"
 
 # TCP port selection

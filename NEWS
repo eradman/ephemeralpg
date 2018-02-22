@@ -1,9 +1,14 @@
+= Next Release: 2.5
+
+ - Skip over pre-initialized database directories that are not owned by the
+   current user
+
 = Release History
 
 == 2.4: February 02, 2018
 
-- Ignore .psqlrc to prevent indeterminate behaviors
-- Guard against race condition if pg_tmp is executed concurrently
+ - Ignore .psqlrc to prevent indeterminate behaviors
+ - Guard against race condition if pg_tmp is executed concurrently
 
 == 2.3: August 11, 2017
 
