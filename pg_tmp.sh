@@ -70,7 +70,7 @@ start)
 			td=$(dirname "$d")
 			test -O $td/NEW && rm $td/NEW 2> /dev/null && { TD=$td; break; }
 		done
-		[ -z $TD ] && TD=$($0 initdb)
+		[ -z $TD ] && { TD=$($0 initdb); rm $TD/NEW; }
 		nice -n 19 $0 initdb > /dev/null &
 	else
 		[ -O $TD/$PGVER ] || TD=$($0 initdb -d $TD)

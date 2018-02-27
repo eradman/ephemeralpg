@@ -2,6 +2,7 @@
 
  - Skip over pre-initialized database directories that are not owned by the
    current user
+ - Guard against a variant race condition introduced in ephemeralpg-2.4
 
 = Release History
 

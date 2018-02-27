@@ -144,6 +144,7 @@ try "Start a new instance without a pre-initialized datadir" do
   eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.012345"
   eq err, <<-eos
 initdb --nosync -D #{$systmp}/ephemeralpg.012345/9.4.4 -E UNICODE -A trust
+rm #{$systmp}/ephemeralpg.012345/NEW
 pg_ctl -W -o " " -s -D #{$systmp}/ephemeralpg.012345/9.4.4 -l #{$systmp}/ephemeralpg.012345/9.4.4/postgres.log start
 sleep 0.1
   eos
