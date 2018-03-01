@@ -1,10 +1,11 @@
-= Next Release: 2.5
+= Release History
+
+== 2.5: March 01, 2018
 
  - Skip over pre-initialized database directories that are not owned by the
    current user
  - Guard against a variant race condition introduced in ephemeralpg-2.4
 
-= Release History
 
 == 2.4: February 02, 2018
 
