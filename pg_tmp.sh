@@ -39,7 +39,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-initdb -V > /dev/null
+initdb -V > /dev/null || exit 1
 PGVER=$(psql -V | awk '{print $NF}')
 
 case ${CMD:-start} in

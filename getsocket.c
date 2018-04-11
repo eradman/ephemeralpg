@@ -23,7 +23,7 @@
 #include <string.h>
 
 /*
- * getport
+ * getsocket
  * fetch an unused TCP port for temporary services to use
  */
 
