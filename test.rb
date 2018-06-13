@@ -30,8 +30,8 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 2.5\n" +
-    "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]\n"
+    "release: 2.6\n" +
+    "usage: pg_tmp [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]\n"
 
 # TCP port selection
 
@@ -97,12 +97,12 @@ end
 
 try "Start a new instance with a specified datadir and multiple options" do
   `: > #{$systmp}/nice.trace`
-  cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -o '-c track_commit_timestamp=true -c shared_buffers = 12MB'"
+  cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -o '-c track_commit_timestamp=true -c shared_buffers=12MB'"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
   eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX"
   eq err, <<-eos
-pg_ctl -W -o " -c track_commit_timestamp=true -c shared_buffers = 12MB"\
+pg_ctl -W -o " -c track_commit_timestamp=true -c shared_buffers=12MB"\
  -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgres.log start
 sleep 0.1
   eos

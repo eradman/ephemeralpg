@@ -13,7 +13,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd April 18, 2016
+.Dd June 13, 2018
 .Dt PG_TMP 1
 .Os
 .Sh NAME
@@ -21,8 +21,8 @@
 .Nd quickly spin up temporary PostgreSQL database
 .Sh SYNOPSIS
 .Nm pg_tmp
+.Op Fl t Op Fl p Ar port
 .Op Fl w Ar timeout
-.Op Fl t
 .Op Fl o Ar extra-options
 .Op Fl d Ar datadir
 .Sh DESCRIPTION
@@ -47,6 +47,9 @@ The default is 60 seconds.
 Use a TCP port selected by
 .Xr getsocket 1
 bound to 127.0.0.1.
+A port may be selected using the
+.Fl p
+flag.
 Otherwise the path to a Unix socket is returned.
 .It Fl o
 Specifies extra-options to be passed directly to the

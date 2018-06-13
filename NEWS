@@ -1,3 +1,7 @@
+= Next Release: 2.6
+
+ - Only run 'getsocket(1)' if a port was not specified
+
 = Release History
 
 == 2.5: March 01, 2018

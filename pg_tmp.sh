@@ -16,7 +16,7 @@
 
 usage() {
 	>&2 echo "release: ${release}"
-	>&2 echo "usage: pg_tmp [-w timeout] [-t] [-o extra-options] [-d datadir]"
+	>&2 echo "usage: pg_tmp [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]"
 	exit 1
 }
 
@@ -26,14 +26,14 @@ trap '' HUP
 set +o posix
 
 USER_OPTS=""
->/dev/null getopt w:d:o:p:t "$@" || usage
+>/dev/null getopt tp:w:o:d: "$@" || usage
 while [ $# -gt 0 ]; do
 	case "$1" in
+		-t) LISTENTO="127.0.0.1" ;;
+		-p) PGPORT="$2"; shift ;;
 		-w) TIMEOUT="$2"; shift ;;
-		-d) TD="$2"; shift ;;
-		-t) LISTENTO="127.0.0.1"; PGPORT="$(getsocket)" ;;
-		-p) PGPORT="$2" shift ;;
 		-o) USER_OPTS="$2"; shift ;;
+		-d) TD="$2"; shift ;;
 		 *) CMD=$1 ;;
 	esac
 	shift
@@ -41,6 +41,10 @@ done
 
 initdb -V > /dev/null || exit 1
 PGVER=$(psql -V | awk '{print $NF}')
+
+[ -n "$LISTENTO" ] && [ -z "$PGPORT" ] && {
+	PGPORT="$(getsocket)"
+}
 
 case ${CMD:-start} in
 initdb)
