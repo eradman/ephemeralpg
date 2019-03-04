@@ -21,6 +21,7 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 /*
  * getsocket
@@ -42,7 +43,8 @@ main(int argc, char *argv[]) {
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	bind(sock, (struct sockaddr*) &addr, sizeof(addr));
 	getsockname(sock, (struct sockaddr*) &addr, &addrlen);
-	port = ntohs(addr.sin_port); 
+	port = ntohs(addr.sin_port);
+	close(sock);
 
 	printf("%d\n", port);
 	return 0;
