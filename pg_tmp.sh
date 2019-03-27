@@ -61,6 +61,8 @@ initdb)
 	    log_min_duration_statement = 0
 	    log_connections = on
 	    log_disconnections = on
+	    wal_keep_segments = 2
+	    max_wal_size = 64MB
 	EOF
 	touch $TD/NEW
 	echo $TD

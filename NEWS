@@ -1,6 +1,7 @@
 = Next Release: 2.6
 
  - Only run 'getsocket(1)' if a port was not specified
+ - Reduce disk usage by running checkpoints after 64MB of WAL (default is 1GB)
 
 = Release History
 
