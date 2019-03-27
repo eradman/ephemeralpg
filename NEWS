@@ -1,9 +1,9 @@
-= Next Release: 2.6
+= Release History
+
+== 2.6: March 27, 2019
 
  - Only run 'getsocket(1)' if a port was not specified
  - Reduce disk usage by running checkpoints after 64MB of WAL (default is 1GB)
-
-= Release History
 
 == 2.5: March 01, 2018
 
