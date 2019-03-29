@@ -16,7 +16,7 @@
 
 usage() {
 	>&2 echo "release: ${release}"
-	>&2 echo "usage: pg_tmp [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]"
+	>&2 echo "usage: pg_tmp [-k] [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]"
 	exit 1
 }
 
@@ -26,9 +26,10 @@ trap '' HUP
 set +o posix
 
 USER_OPTS=""
->/dev/null getopt tp:w:o:d: "$@" || usage
+>/dev/null getopt ktp:w:o:d: "$@" || usage
 while [ $# -gt 0 ]; do
 	case "$1" in
+		-k) KEEP=$1 ;;
 		-t) LISTENTO="127.0.0.1" ;;
 		-p) PGPORT="$2"; shift ;;
 		-w) TIMEOUT="$2"; shift ;;
@@ -81,7 +82,9 @@ start)
 	else
 		[ -O $TD/$PGVER ] || TD=$($0 initdb -d $TD)
 	fi
-	nice -n 19 $0 -w ${TIMEOUT:-60} -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
+	if [ ${TIMEOUT:-1} -gt 0 ]; then
+		nice -n 19 $0 $KEEP -w ${TIMEOUT:-60} -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
+	fi
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
 	pg_ctl -W -o "$OPTS $USER_OPTS" -s -D $TD/$PGVER -l $LOGFILE start
@@ -104,7 +107,7 @@ stop)
 		>&2 echo "Please specify a PostgreSQL data directory using -d"
 		exit 1
 	}
-	trap "rm -r $TD" EXIT
+	[ "$KEEP" == "" ] && trap "rm -r $TD" EXIT
 	PGHOST=$TD
 	export PGHOST PGPORT
 	q="SELECT count(*) FROM pg_stat_activity WHERE datname='test';"

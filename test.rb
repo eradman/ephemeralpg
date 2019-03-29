@@ -30,8 +30,8 @@ $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 at_exit { `rm -r #{$systmp}` }
 
 $usage_text = \
-    "release: 2.6\n" +
-    "usage: pg_tmp [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]\n"
+    "release: 2.7\n" +
+    "usage: pg_tmp [-k] [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]\n"
 
 # TCP port selection
 
@@ -158,6 +158,44 @@ nice ./pg_tmp initdb
   eos
 end
 
+try "Start a new instance and leave server running" do
+  `: > #{$systmp}/nice.trace`
+  cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -w 0"
+  out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
+  out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
+  eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX"
+  eq err, <<-eos
+pg_ctl -W -o " "\
+ -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgres.log start
+sleep 0.1
+  eos
+  eq status.success?, true
+  # background tasks kicked off by starting an instance
+  nice = `cat #{$systmp}/nice.trace | sort`
+  nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nice, ""
+end
+
+try "Start a new instance and keep the tmp datadir" do
+  `: > #{$systmp}/nice.trace`
+  cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -k"
+  out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
+  out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
+  eq out, "postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX"
+  eq err, <<-eos
+pg_ctl -W -o " "\
+ -s -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 -l #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgres.log start
+sleep 0.1
+  eos
+  eq status.success?, true
+  # background tasks kicked off by starting an instance
+  nice = `cat #{$systmp}/nice.trace | sort`
+  nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
+  eq nice, <<-eos
+nice ./pg_tmp -k -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
+  eos
+end
+
 try "Stop a running instance" do
   `touch #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgresql.conf`
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
@@ -200,6 +238,20 @@ sleep 0
 pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
+  eos
+  eq status.success?, true
+  `rm #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgresql.conf`
+end
+
+try "Stop a running instance and keep tmp datadir" do
+  `touch #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgresql.conf`
+  cmd = "./pg_tmp stop -k -d #{$systmp}/ephemeralpg.XXXXXX -w 60"
+  out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
+  eq out.empty?, true
+  eq err, <<-eos
+sleep 60
+pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/9.4.4 stop
+sleep 1
   eos
   eq status.success?, true
   `rm #{$systmp}/ephemeralpg.XXXXXX/9.4.4/postgresql.conf`

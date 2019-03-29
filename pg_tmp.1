@@ -21,6 +21,7 @@
 .Nd quickly spin up temporary PostgreSQL database
 .Sh SYNOPSIS
 .Nm pg_tmp
+.Op Fl k
 .Op Fl t Op Fl p Ar port
 .Op Fl w Ar timeout
 .Op Fl o Ar extra-options
@@ -36,12 +37,15 @@ spawns a background process that initializes a new database under
 which is used by subsequent invocations to reduce startup time.
 The arguments are as follows:
 .Bl -tag -width Ds
+.It Fl k
+Keep the temporary directory after the server is shut down.
 .It Fl w
 Shut down and remove the database after the specified
 .Ar timeout .
 If one or more clients are still connected then
 .Nm
 sleeps and retries again after the same interval.
+A value of 0 will leave the server running indefinitely.
 The default is 60 seconds.
 .It Fl t
 Use a TCP port selected by
@@ -59,10 +63,10 @@ These options should usually be surrounded by quotes to ensure that they are
 passed through as a group.
 .It Fl d
 Specify the temporary directory to use.
-May be combined with the optional arguments
+May be used with the optional arguments
 .Ar initdb ,
-.Ar start ,
-and
+.Ar start
+and is required for
 .Ar stop .
 If this option is used
 .Nm
