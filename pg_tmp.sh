@@ -99,7 +99,7 @@ start)
 		sleep 0.1
 		createdb -E UNICODE test > /dev/null 2>&1 && break
 	done
-	[ $? != 0 ] && { >&2 cat $LOGFILE; exit 1; }
+	[ $? != 0 ] && { >&2 tail $LOGFILE; exit 1; }
 	[ -t 1 ] && echo "$url" || echo -n "$url"
 	;;
 stop)

@@ -2,6 +2,7 @@
 
  - '-w 0' leaves the server running indefinitely
  - New '-k' flag prevents the temporary directory from being cleaned up
+ - Only repeat the last 10 lines of the postgres log if createdb(1) fails
 
 = Release History
 
