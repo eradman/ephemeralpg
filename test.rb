@@ -202,7 +202,7 @@ try "Stop a running instance" do
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err, <<-eos
-sleep 0
+sleep 5
 psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname='test';
 pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/11.2 stop
 sleep 1
@@ -234,7 +234,7 @@ try "Stop a running instance if query fails" do
   out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
   eq out.empty?, true
   eq err.gsub(/on line \d+/, 'on line 100'), <<-eos
-sleep 0
+sleep 5
 pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/11.2 stop
 sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
