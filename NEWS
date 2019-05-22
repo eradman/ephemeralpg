@@ -1,11 +1,11 @@
-= Next Release: 2.7
+= Release History
+
+== 2.7: May 22, 2019
 
  - '-w 0' leaves the server running indefinitely
  - New '-k' flag prevents the temporary directory from being cleaned up
  - Only repeat the last 10 lines of the postgres log if createdb(1) fails
  - Set default check interval to 5 seconds for for 'stop'
-
-= Release History
 
 == 2.6: March 27, 2019
 
