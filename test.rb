@@ -58,19 +58,15 @@ end
 try "Catch unknown options" do
   cmd = "./pg_tmp -t -z"
   out, err, status = Open3.capture3(cmd)
-  eq err.gsub(/invalid|illegal/,'unknown').gsub('\'', ''),
-    "getopt: unknown option -- z\n" + $usage_text
   eq out.empty?, true
-  eq status.success?, false
+  eq status.exitstatus, 1
 end
 
 try "Bogus arguments mixed with valid positional" do
   cmd = "./pg_tmp -t -z initdb -w 20"
   out, err, status = Open3.capture3(cmd)
-  eq err.gsub(/invalid|illegal/,'unknown').gsub('\'', ''),
-    "getopt: unknown option -- z\n" + $usage_text
   eq out.empty?, true
-  eq status.success?, false
+  eq status.exitstatus, 1
 end
 
 try "Run with missing Postgres binaries" do
