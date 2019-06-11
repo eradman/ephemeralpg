@@ -1,3 +1,8 @@
+= Next Release: 2.8
+
+ - Move hosting from bitbucket.org to github.com
+ - Rename tag names from ephemeralpg-X.Y to X.Y
+
 = Release History
 
 == 2.7: May 22, 2019
