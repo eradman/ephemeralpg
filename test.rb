@@ -23,6 +23,7 @@ def eq(a, b)
 end
 
 # Setup
+ENV['LANG'] = "C"
 $altpath = "stubs:" + ENV['PATH']
 $systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 `mkdir -p #{$systmp}/ephemeralpg.XXXXXX/11.2`
@@ -70,8 +71,9 @@ try "Bogus arguments mixed with valid positional" do
 end
 
 try "Run with missing Postgres binaries" do
+  getopt_path = %x{ dirname $(which getopt) }.strip
   cmd = "./pg_tmp"
-  out, err, status = Open3.capture3({'PATH'=>"/bin:/usr/bin"}, cmd)
+  out, err, status = Open3.capture3({'PATH'=>"/bin:#{getopt_path}"}, cmd)
   eq err, /.+initdb:.+not found/
   eq out.empty?, true
   eq status.success?, false
