@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
-require "open3"
+#
+require 'fileutils'
+require 'open3'
 
 # Test Utilities
 $tests = 0
@@ -25,14 +27,10 @@ end
 # Setup
 ENV['LANG'] = "C"
 $altpath = "stubs:" + ENV['PATH']
-$systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
-`mkdir -p #{$systmp}/ephemeralpg.XXXXXX/11.2`
-`touch #{$systmp}/ephemeralpg.XXXXXX/NEW`
-at_exit { `rm -r #{$systmp}` }
-
-$usage_text = \
-    "release: 2.7\n" +
-    "usage: pg_tmp [-k] [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]\n"
+$systmp = %x{ mktemp -d /tmp/ephemeralpg-test.XXXXXX }.chomp
+FileUtils.mkdir_p "#{$systmp}/ephemeralpg.XXXXXX/11.2"
+FileUtils.touch "#{$systmp}/ephemeralpg.XXXXXX/NEW"
+at_exit { FileUtils.rm_r $systmp }
 
 # TCP port selection
 
@@ -71,7 +69,7 @@ try "Bogus arguments mixed with valid positional" do
 end
 
 try "Run with missing Postgres binaries" do
-  getopt_path = %x{ dirname $(which getopt) }.strip
+  getopt_path = File.dirname %x{ which getopt }.chomp
   cmd = "./pg_tmp"
   out, err, status = Open3.capture3({'PATH'=>"/bin:#{getopt_path}"}, cmd)
   eq err, /.+initdb:.+not found/
@@ -94,7 +92,7 @@ initdb --nosync -D #{$systmp}/ephemeralpg.012345/11.2 -E UNICODE -A trust
 end
 
 try "Start a new instance with a specified datadir and multiple options" do
-  `: > #{$systmp}/nice.trace`
+  File.write "#{$systmp}/nice.trace", ""
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -o '-c track_commit_timestamp=true -c shared_buffers=12MB'"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
@@ -106,7 +104,7 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nice = `cat #{$systmp}/nice.trace | sort`
+  nice = File.readlines("#{$systmp}/nice.trace").sort.join
   nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq nice, <<-eos
 nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
@@ -114,7 +112,7 @@ nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
 end
 
 try "Start a new instance on a TCP port using a specified datadir" do
-  `: > #{$systmp}/nice.trace`
+  File.write "#{$systmp}/nice.trace", ""
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -t"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out, "postgresql://user11@127.0.0.1:55550/test"
@@ -125,7 +123,7 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nice = `cat #{$systmp}/nice.trace | sort`
+  nice = File.readlines("#{$systmp}/nice.trace").sort.join
   nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq nice, <<-eos
 nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 55550 stop
@@ -133,7 +131,7 @@ nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 55550 stop
 end
 
 try "Start a new instance without a pre-initialized datadir" do
-  `: > #{$systmp}/nice.trace`
+  File.write "#{$systmp}/nice.trace", ""
   cmd = "./pg_tmp start "
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
@@ -148,7 +146,7 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nice = `cat #{$systmp}/nice.trace | sort`
+  nice = File.readlines("#{$systmp}/nice.trace").sort.join
   nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq nice, <<-eos
 nice ./pg_tmp -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
@@ -157,7 +155,7 @@ nice ./pg_tmp initdb
 end
 
 try "Start a new instance and leave server running" do
-  `: > #{$systmp}/nice.trace`
+  File.write "#{$systmp}/nice.trace", ""
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -w 0"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
@@ -169,13 +167,13 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nice = `cat #{$systmp}/nice.trace | sort`
+  nice = File.readlines("#{$systmp}/nice.trace").sort.join
   nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq nice, ""
 end
 
 try "Start a new instance and keep the tmp datadir" do
-  `: > #{$systmp}/nice.trace`
+  File.write "#{$systmp}/nice.trace", ""
   cmd = "./pg_tmp start -d #{$systmp}/ephemeralpg.XXXXXX -k"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   out.gsub!(/ephemeralpg-test\.[a-zA-Z0-9]{6}%2F/, '')
@@ -187,7 +185,7 @@ sleep 0.1
   eos
   eq status.success?, true
   # background tasks kicked off by starting an instance
-  nice = `cat #{$systmp}/nice.trace | sort`
+  nice = File.readlines("#{$systmp}/nice.trace").sort.join
   nice.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq nice, <<-eos
 nice ./pg_tmp -k -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
@@ -195,7 +193,7 @@ nice ./pg_tmp -k -w 60 -d #{$systmp}/ephemeralpg.012345 -p 5432 stop
 end
 
 try "Stop a running instance" do
-  `touch #{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf`
+  File.write "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ""
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
@@ -210,7 +208,7 @@ rm -r #{$systmp}/ephemeralpg.XXXXXX
 end
 
 try "Stop a running instance and remove tmp datadir" do
-  `touch #{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf`
+  File.write "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ""
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX -w 60"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
@@ -222,12 +220,12 @@ sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true
-  `rm #{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf`
+  File.unlink "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf"
 end
 
 try "Stop a running instance if query fails" do
-  `touch #{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf`
-  `touch #{$systmp}/ephemeralpg.XXXXXX/STOP`
+  File.write "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ""
+  File.write "#{$systmp}/ephemeralpg.XXXXXX/STOP", ""
   cmd = "./pg_tmp stop -d #{$systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({'PATH'=>$altpath}, cmd)
   eq out.empty?, true
@@ -238,11 +236,11 @@ sleep 1
 rm -r #{$systmp}/ephemeralpg.XXXXXX
   eos
   eq status.success?, true
-  `rm #{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf`
+  File.unlink "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf"
 end
 
 try "Stop a running instance and keep tmp datadir" do
-  `touch #{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf`
+  File.write "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ""
   cmd = "./pg_tmp stop -k -d #{$systmp}/ephemeralpg.XXXXXX -w 60"
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out.empty?, true
@@ -252,7 +250,7 @@ pg_ctl -W -D #{$systmp}/ephemeralpg.XXXXXX/11.2 stop
 sleep 1
   eos
   eq status.success?, true
-  `rm #{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf`
+  File.unlink "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf"
 end
 
 puts "\n#{$tests} tests PASSED"
