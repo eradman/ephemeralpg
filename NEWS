@@ -1,6 +1,7 @@
 = Next Release: 2.9
 
  - More portable integration tests
+ - Add contrib/flattenjs.rb
 
 = Release History
 
