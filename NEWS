@@ -1,10 +1,10 @@
-= Next Release: 2.9
+= Release History
+
+== 2.9: November 21, 2019
 
  - More portable integration tests
  - Add contrib/flattenjs
  - Detect version based on pg_ctl(1), not psql(1)
-
-= Release History
 
 == 2.8: September 25, 2019
 
