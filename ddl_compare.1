@@ -50,24 +50,24 @@ Name the schema that to be compared.
 The default is
 .Ql public .
 .El
+.Pp
+The positional arguments are supplied as the filename to
+.Xr psql 1 ,
+so it is also possible to substitute a hyphen
+.Pq Sq -
+and supply the database definition on standard input.
 .Sh ENVIRONMENT
-.Bl -tag -width VISUALDIFF
+.Bl -tag -width DDLX
 .It Ev DDLX
 The path to an file containing SQL functions for extracting a schema for each
 table.
 The default is
 .Pa /usr/share/misc/ddlx${MAJOR}.sql .
-.It Ev VISUALDIFF
-If set, will suggest a tool to be printed before each line in the summary output.
-This has no effect on the operation of
-.Nm
-itself, but is provided to make copy-and-paste easier.
-.El
 .Sh EXAMPLES
 Find the differences between between a test instance and a schema definition
 .Bd -literal -offset indent
-pg_dump -s $test_url > test.sql
-ddl_compare -g roles.sql test.sql schema.sql
+pg_dump -s $dev_url > /tmp/dev_dump.sql
+ddl_compare -g roles.sql localharvest.sql /tmp/dev_dump.sql
 .Ed
 .Sh SEE ALSO
 .Xr pg_dump 1

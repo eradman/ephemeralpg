@@ -84,7 +84,7 @@ do
 	
 	[ -z "$GLOBALS" ] || $psql_quiet -f $GLOBALS
 	$psql_quiet -f $DDLX
-	$psql_quiet -f $1
+	$psql_quiet -o /dev/null -f $1
 	
 	ALL_TABLES="
 	  SELECT table_name
@@ -114,4 +114,6 @@ do
 		sed -i -r -e 's/Owner: ([_a-z0-9]+)/Owner: CURRENT_USER/g' $dir/$f
 	done
 done
-git diff --color --stat {a,b}/ | sed -e "s:{a => b}:${VISUALDIFF} {a,b}:"
+wd=$PWD
+cd /
+git diff --color --stat $wd/{a,b}/ | sed -e "s:{a => b}:{a,b}:"
