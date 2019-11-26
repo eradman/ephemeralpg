@@ -32,6 +32,8 @@ FileUtils.mkdir_p "#{$systmp}/ephemeralpg.XXXXXX/11.2"
 FileUtils.touch "#{$systmp}/ephemeralpg.XXXXXX/NEW"
 at_exit { FileUtils.rm_r $systmp }
 
+puts "\e[32m---\e[39m"
+
 # TCP port selection
 
 try "Fetch a random, unused port" do
@@ -253,5 +255,5 @@ sleep 1
   File.unlink "#{$systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf"
 end
 
-puts "\n#{$tests} tests PASSED"
+puts "#{$tests} tests PASSED"
 

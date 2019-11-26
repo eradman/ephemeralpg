@@ -30,8 +30,8 @@ Installation - SmartOS/Solaris
 
     LDFLAGS='-lsocket -lnsl' make install
 
-Man Page Examples
------------------
+Man Page Examples for pg_tmp(1)
+-------------------------------
 
 Create a temporary database and run a query:
 
@@ -43,11 +43,13 @@ Start a temporary server with a custom extension:
     uri=$(pg_tmp -o "-c shared_preload_libraries=$PWD/auth_hook")
     psql $uri -c "SELECT 1"
 
-Requirements
-------------
+Man Page Examples for ddl_compare(1)
+------------------------------------
 
-* KSH or BASH
-* PostgreSQL 9.3+
+Find the differences between between a test instance and a schema definition
+
+    pg_dump -s $test_url > test.sql
+    ddl_compare -g roles.sql test.sql schema.sql
 
 News
 ----

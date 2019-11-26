@@ -1,3 +1,7 @@
+= Next Release: 3.0
+
+ - Add ddl_compare(1), a utility for creating schema diffs
+
 = Release History
 
 == 2.9: November 21, 2019
@@ -20,7 +24,7 @@
 
 == 2.6: March 27, 2019
 
- - Only run 'getsocket(1)' if a port was not specified
+ - Only run getsocket(1) if a port was not specified
  - Reduce disk usage by running checkpoints after 64MB of WAL (default is 1GB)
 
 == 2.5: March 01, 2018

@@ -1,0 +1,73 @@
+.\"
+.\" Copyright (c) 2019 Eric Radman <ericshane@eradman.com>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd November 25, 2019
+.Dt DDL_COMPARE 1
+.Os
+.Sh NAME
+.Nm ddl_compare
+.Nd compare PostgreSQL schemas
+.Sh SYNOPSIS
+.Nm ddl_compare
+.Op Fl v
+.Op Fl g Ar globals
+.Op Fl n Ar schema
+.Ar a.sql
+.Ar b.sql
+.Sh DESCRIPTION
+The
+.Nm
+utility applies schema files to ephemeral instances of PostgreSQL
+created by
+.Xr pg_tmp 1
+and generates an representation dependencies for table that can be easily
+compared using a visual editor such as
+.Xr vimdiff 1 .
+The results are written to directories
+.Pa a/
+and
+.Pa b/ .
+The arguments are as follows:
+.Bl -tag -width Ds
+.It Fl v
+Display the URL of each ephemeral database
+.It Fl g
+Apply a series of SQL statements to both sides before generating a schema diff.
+.It Fl n
+Name the schema that to be compared.
+The default is
+.Ql public .
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width VISUALDIFF
+.It Ev DDLX
+The path to an file containing SQL functions for extracting a schema for each
+table.
+The default is
+.Pa /usr/share/misc/ddlx${MAJOR}.sql .
+.It Ev VISUALDIFF
+If set, will suggest a tool to be printed before each line in the summary output.
+This has no effect on the operation of
+.Nm
+itself, but is provided to make copy-and-paste easier.
+.El
+.Sh EXAMPLES
+Find the differences between between a test instance and a schema definition
+.Bd -literal -offset indent
+pg_dump -s $test_url > test.sql
+ddl_compare -g roles.sql test.sql schema.sql
+.Ed
+.Sh SEE ALSO
+.Xr pg_dump 1
