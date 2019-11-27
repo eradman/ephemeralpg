@@ -69,15 +69,16 @@ done
 
 for util in pg_tmp git; do
 	p=$(which $util 2> /dev/null) || {
-		echo "pg_compare: could not locate the '$util' utility" >&2
+		echo "ddl_compare: could not locate the '$util' utility" >&2
 		exit 1
 	}
 done
 
-for dir in a b
+wd=$PWD
+for dir in _a _b
 do
-	[ -d $dir ] || mkdir $dir && rm -f $dir/*
 	url=$(pg_tmp -w 20)
+	rm -rf $dir
 	[ -z "$VERBOSE" ] || echo $url
 	psql_values="psql $url -q --no-psqlrc -At"
 	psql_quiet="psql $url -q -v ON_ERROR_STOP=1"
@@ -92,8 +93,8 @@ do
 	  WHERE table_schema='$SCHEMA'
 	  ORDER BY table_name
 	"
-	printf "\e[1m$1\e[0m\n"
-	printf " \e[1m${dir}/\e[0m"
+	printf "\e[1m$1\e[0m -> ${wd}/${dir}\n"
+	mkdir $dir
 	for table in $($psql_values -c "$ALL_TABLES")
 	do
 		printf " $table"
@@ -104,16 +105,13 @@ do
 done
 
 echo "----"
-files=$(find a b -name ".*" -prune -o -type f -exec basename {} \; | sort -u)
-for f in $files
+for f in $(find _a _b -name ".*" -prune -o -type f -exec basename {} \; | sort -u)
 do
-	touch {a,b}/$f
-	for dir in a b
-	do
+	for dir in _a _b; do
+		touch $dir/$f
 		sed -i -r -e 's/OWNER TO ([_a-z0-9]+)/OWNER TO CURRENT_USER/g' $dir/$f
 		sed -i -r -e 's/Owner: ([_a-z0-9]+)/Owner: CURRENT_USER/g' $dir/$f
 	done
 done
-wd=$PWD
 cd /
-git diff --color --stat $wd/{a,b}/ | sed -e "s:{a => b}:{a,b}:"
+git diff --color --stat $wd/_{a,b}/ | sed "s:{_a => _b}:_{a,b}:"

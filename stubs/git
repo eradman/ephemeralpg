@@ -1,0 +1,2 @@
+#!/bin/sh
+>&2 echo git $1 $2 $3 _a/ _b/

@@ -16,8 +16,8 @@ getsocket: getsocket.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${EXTRA_SRC} $< -o $@ ${LDFLAGS}
 
 test: pg_tmp getsocket ddl_compare
-	@ruby ./test_pg_tmp.rb
 	@ruby ./test_ddl_compare.rb
+	@ruby ./test_pg_tmp.rb
 
 selftest: pg_tmp
 	@/bin/echo "Using `pg_ctl --version`"

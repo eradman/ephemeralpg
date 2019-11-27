@@ -57,32 +57,24 @@ try "Run with missing Postgres binaries" do
   eq status.success?, false
 end
 
-try "Compare a/ and b/" do
-  getopt_path = File.dirname %x{ which getopt }.chomp
+try "Compare a and b" do
   cmd = "#{Dir.pwd}/ddl_compare a.sql b.sql"
   FileUtils.touch "#{$systmp}/a.sql"
   FileUtils.touch "#{$systmp}/b.sql"
   FileUtils.touch "#{$systmp}/ddlx.sql"
   out, err, status = Open3.capture3({'PATH'=>$altpath, 'DDLX'=>"./ddlx.sql"}, cmd, :chdir=>$systmp)
   eq err, <<-eos
-rm -f a/*
+rm -rf _a
 psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -f ./ddlx.sql
-psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -f a.sql
+psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -o /dev/null -f a.sql
 psql postgresql://user@127.0.0.1:99/test -q --no-psqlrc -At -c SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name
 psql postgresql://user@127.0.0.1:99/test -q --no-psqlrc -At -c SELECT ddlx_script('public.1'::regclass)
-rm -f b/*
+rm -rf _b
 psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -f ./ddlx.sql
-psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -f b.sql
+psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -o /dev/null -f b.sql
 psql postgresql://user@127.0.0.1:99/test -q --no-psqlrc -At -c SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name
 psql postgresql://user@127.0.0.1:99/test -q --no-psqlrc -At -c SELECT ddlx_script('public.1'::regclass)
-git diff --color --stat a/ b/
-  eos
-  eq out, <<-eos
-[1ma.sql[0m
- [1ma/[0m 1
-[1mb.sql[0m
- [1mb/[0m 1
-----
+git diff --color --stat _a/ _b/
   eos
   eq status.success?, true
 end
