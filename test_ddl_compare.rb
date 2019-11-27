@@ -28,7 +28,10 @@ end
 ENV['LANG'] = "C"
 $altpath = "#{Dir.pwd}/stubs:" + ENV['PATH']
 $systmp = %x{ mktemp -d /tmp/ephemeralpg-test.XXXXXX }.chomp
+ddlx_path = "#{$systmp}/ddlx.sql"
+FileUtils.touch ddlx_path
 at_exit { FileUtils.rm_r $systmp }
+ENV['DDLX'] = ddlx_path
 
 puts "\e[32m---\e[39m"
 
@@ -61,7 +64,6 @@ try "Compare a and b" do
   cmd = "#{Dir.pwd}/ddl_compare a.sql b.sql"
   FileUtils.touch "#{$systmp}/a.sql"
   FileUtils.touch "#{$systmp}/b.sql"
-  FileUtils.touch "#{$systmp}/ddlx.sql"
   out, err, status = Open3.capture3({'PATH'=>$altpath, 'DDLX'=>"./ddlx.sql"}, cmd, :chdir=>$systmp)
   eq err, <<-eos
 rm -rf _a
