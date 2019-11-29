@@ -114,4 +114,4 @@ do
 	done
 done
 cd /
-git diff --color --stat $wd/_{a,b}/ | sed "s:{_a => _b}:_{a,b}:"
+git diff --color --stat=2040,2000,40 $wd/_{a,b}/ | sed "s:{_a => _b}:_{a,b}:"

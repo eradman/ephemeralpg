@@ -13,7 +13,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd November 25, 2019
+.Dd November 29, 2019
 .Dt DDL_COMPARE 1
 .Os
 .Sh NAME
@@ -64,8 +64,9 @@ The path to an file containing SQL functions for extracting a schema for each
 table.
 The default is
 .Pa /usr/share/misc/ddlx${MAJOR}.sql .
+.El
 .Sh EXAMPLES
-Find the differences between between a test instance and a schema definition
+Find the differences between a test instance and a schema definition
 .Bd -literal -offset indent
 pg_dump -s $dev_url > /tmp/dev_dump.sql
 ddl_compare -g roles.sql localharvest.sql /tmp/dev_dump.sql

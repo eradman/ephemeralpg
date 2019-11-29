@@ -76,7 +76,7 @@ psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -f ./ddlx.sql
 psql postgresql://user@127.0.0.1:99/test -q -v ON_ERROR_STOP=1 -o /dev/null -f b.sql
 psql postgresql://user@127.0.0.1:99/test -q --no-psqlrc -At -c SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name
 psql postgresql://user@127.0.0.1:99/test -q --no-psqlrc -At -c SELECT ddlx_script('public.1'::regclass)
-git diff --color --stat _a/ _b/
+git diff --color --stat=2040,2000,40 _a/ _b/
   eos
   eq status.success?, true
 end
