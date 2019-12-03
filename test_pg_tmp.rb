@@ -34,26 +34,6 @@ at_exit { FileUtils.rm_r $systmp }
 
 puts "\e[32m---\e[39m"
 
-# TCP port selection
-
-try "Fetch a random, unused port" do
-  cmd = "./getsocket"
-  out, err, status = Open3.capture3(cmd)
-  port = out.to_i
-  eq (port > 1024 and port <= 65536), true
-  eq err.empty?, true
-  eq status.success?, true
-end
-
-try "Ensure a new port is picked each time" do
-  cmd = "./getsocket"
-  out1, err1, status1 = Open3.capture3(cmd)
-  out2, err2, status2 = Open3.capture3(cmd)
-  eq (out1 == out2), false
-  eq status1.success?, true
-  eq status2.success?, true
-end
-
 # Option Parsing
 
 try "Catch unknown options" do
