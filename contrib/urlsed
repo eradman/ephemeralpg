@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'uri'
+
+$components = [ :scheme, :userinfo, :host, :port, :path, :query, :fragment ]
+
+def usage
+  $stderr.puts "usage: urlsed [component=value ...] < input"
+  $stderr.puts "components: " + $components.join(" ")
+  exit(1)
+end
+
+usage if $stdin.isatty
+
+uri = URI($stdin.gets.strip)
+
+ARGV.each { |arg|
+  k, v = arg.split('=', 2)
+  usage if !$components.include? k.to_sym
+  if k == 'port' and v.to_i > 0
+      uri.send(k+"=", v.to_i)
+  else
+      uri.send(k+"=", v)
+  end
+}
+puts uri
