@@ -85,7 +85,7 @@ start)
 	if [ ${TIMEOUT:-1} -gt 0 ]; then
 		nice -n 19 $0 $KEEP -w ${TIMEOUT:-60} -d $TD -p ${PGPORT:-5432} stop > $TD/stop.log 2>&1 &
 	fi
-	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='$LISTENTO' -c port=$PGPORT"
+	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='*' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
 	pg_ctl -W -o "$OPTS $USER_OPTS" -s -D $TD/$PGVER -l $LOGFILE start
 	PGHOST=$TD

@@ -1,6 +1,7 @@
 = Next Release: 3.0
 
  - Add ddl_compare(1), a utility for creating schema diffs
+ - Listen on '*' when the '-t' option is specified
 
 = Release History
 

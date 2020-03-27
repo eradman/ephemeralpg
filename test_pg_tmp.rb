@@ -99,7 +99,7 @@ try "Start a new instance on a TCP port using a specified datadir" do
   out, err, status = Open3.capture3({'SYSTMP'=>$systmp, 'PATH'=>$altpath}, cmd)
   eq out, "postgresql://user11@127.0.0.1:55550/test"
   eq err, <<-eos
-pg_ctl -W -o "-c listen_addresses='127.0.0.1' -c port=55550 "\
+pg_ctl -W -o "-c listen_addresses='*' -c port=55550 "\
  -s -D #{$systmp}/ephemeralpg.XXXXXX/11.2 -l #{$systmp}/ephemeralpg.XXXXXX/11.2/postgres.log start
 sleep 0.1
   eos
