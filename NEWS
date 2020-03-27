@@ -1,9 +1,9 @@
-= Next Release: 3.0
+= Release History
+
+== 3.0: March 27, 2020
 
  - Add ddl_compare(1), a utility for creating schema diffs
  - Listen on '*' when the '-t' option is specified
-
-= Release History
 
 == 2.9: November 21, 2019
 
