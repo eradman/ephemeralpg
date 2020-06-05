@@ -11,8 +11,8 @@ the `-w` option (the default is 60).
 initializing a database in the background that is used by subsequent
 invocations.
 
-Installation - BSD, Mac OS, and Linux
--------------------------------------
+Source Installation - BSD, Mac OS, and Linux
+--------------------------------------------
 
     make install
 
@@ -20,13 +20,8 @@ Or to specify a specific installation location
 
     PREFIX=$HOME/local make install
 
-Installation - Mac OS/Homebrew
-------------------------------
-
-    brew install ephemeralpg
-
-Installation - SmartOS/Solaris
-------------------------------
+Source Installation - SmartOS/Solaris
+-------------------------------------
 
     LDFLAGS='-lsocket -lnsl' make install
 
@@ -46,7 +41,7 @@ Start a temporary server with a custom extension:
 Man Page Examples for ddl_compare(1)
 ------------------------------------
 
-Find the differences between between a test instance and a schema definition
+Find the differences between a test instance and a schema definition
 
     pg_dump -s $test_url > test.sql
     ddl_compare -g roles.sql test.sql schema.sql

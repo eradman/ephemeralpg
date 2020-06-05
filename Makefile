@@ -1,8 +1,9 @@
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
-RELEASE = 3.0
+RELEASE = 3.1
+TARGETS = pg_tmp getsocket ddl_compare
 
-all: versioncheck pg_tmp ddl_compare getsocket
+all: versioncheck ${TARGETS}
 
 pg_tmp: pg_tmp.sh
 	sed -e 's/$${release}/${RELEASE}/' $< > $@
@@ -15,7 +16,7 @@ ddl_compare: ddl_compare.sh
 getsocket: getsocket.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${EXTRA_SRC} $< -o $@ ${LDFLAGS}
 
-test: pg_tmp getsocket ddl_compare
+test: ${TARGETS}
 	@ruby ./test_getsocket.rb
 	@ruby ./test_pg_tmp.rb
 	@ruby ./test_ddl_compare.rb
@@ -24,7 +25,7 @@ selftest: pg_tmp
 	@/bin/echo "Using `pg_ctl --version`"
 	@./pg_tmp.sh selftest
 
-install: pg_tmp getsocket
+install: ${TARGETS}
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	install ddl_compare ${DESTDIR}${PREFIX}/bin/
@@ -46,6 +47,6 @@ versioncheck:
 	@head -n3 NEWS | egrep -q "^= Next Release: ${RELEASE}|^== ${RELEASE}: "
 
 clean:
-	rm -f pg_tmp ddl_compare getsocket
+	rm -f ${TARGETS}
 
-.PHONY: all clean install uninstall regress versioncheck
+.PHONY: all clean install uninstall test selftest versioncheck

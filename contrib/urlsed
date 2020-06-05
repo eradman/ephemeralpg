@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+#
+# Eric Radman <ericshane@eradman.com> 2019
 
 require 'uri'
 
