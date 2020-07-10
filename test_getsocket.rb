@@ -18,9 +18,9 @@ def try(descr)
 end
 
 def eq(a, b)
-  _a = "#{a}".gsub /^/, "\e[33m> "
-  _b = "#{b}".gsub /^/, "\e[36m< "
-  raise "\"#{$test_description}\"\n#{_a}\e[39m#{_b}\e[39m" unless b === a
+  _a = "#{a}".gsub /^/, "> "
+  _b = "#{b}".gsub /^/, "< "
+  raise "\"#{$test_description}\"\n#{_a}\n#{_b}" unless b === a
 end
 
 # Setup
