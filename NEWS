@@ -1,6 +1,7 @@
 = Next Release: 3.1
 
  - Minor revisions to README and Makefile
+ - No longer set 'wal_keep_segments' for compatibility with 13
 
 = Release History
 
