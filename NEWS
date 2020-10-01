@@ -1,9 +1,9 @@
-= Next Release: 3.1
+= Release History
+
+== 3.1: October 01, 2020
 
  - Minor revisions to README and Makefile
  - No longer set 'wal_keep_segments' for compatibility with 13
-
-= Release History
 
 == 3.0: March 27, 2020
 
