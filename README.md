@@ -50,7 +50,4 @@ News
 ----
 
 A release history as well as features in the upcoming release are covered in the
-[NEWS] file.
-
-[NEWS]: https://raw.githubusercontent.com/eradman/ephemeralpg/master/NEWS
-
+[NEWS](NEWS) file.

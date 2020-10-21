@@ -1,6 +1,6 @@
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
-RELEASE = 3.1
+RELEASE = 3.2
 TARGETS = pg_tmp getsocket ddl_compare
 
 all: versioncheck ${TARGETS}
