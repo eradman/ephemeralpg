@@ -1,13 +1,15 @@
 #!/usr/bin/env ruby
 #
 # Eric Radman <ericshane@eradman.com> 2019
+#
+# Alter individual components of a URL
 
 require 'uri'
 
 $components = [ :scheme, :userinfo, :host, :port, :path, :query, :fragment ]
 
 def usage
-  $stderr.puts "usage: urlsed [component=value ...] < input"
+  $stderr.puts "usage: urlsed [component=value ...] < url"
   $stderr.puts "components: " + $components.join(" ")
   exit(1)
 end

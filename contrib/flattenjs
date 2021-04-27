@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 #
 # Eric Radman <ericshane@eradman.com> 2019
+#
+# Print JSON in a line-oriented format using PostgreSQL JSON operator syntax
 
 require 'json'
 
 def usage
-  $stderr.puts "usage: flattenjs < input"
+  $stderr.puts "usage: flattenjs < input.json"
   exit(1)
 end
 

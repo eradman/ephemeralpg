@@ -20,8 +20,8 @@ Or to specify a specific installation location
 
     PREFIX=$HOME/local make install
 
-Source Installation - SmartOS/Solaris
--------------------------------------
+Source Installation - Solaris
+-----------------------------
 
     LDFLAGS='-lsocket -lnsl' make install
 
