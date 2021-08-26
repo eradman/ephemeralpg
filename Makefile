@@ -14,7 +14,7 @@ ddl_compare: ddl_compare.sh
 	@chmod +x $@
 
 getsocket: getsocket.c
-	${CC} ${CFLAGS} ${CPPFLAGS} ${EXTRA_SRC} $< -o $@ ${LDFLAGS}
+	${CC} ${CFLAGS} ${CPPFLAGS} ${EXTRA_SRC} ${LDFLAGS} $< -o $@
 
 test: ${TARGETS}
 	@ruby ./test_getsocket.rb

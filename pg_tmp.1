@@ -89,5 +89,10 @@ Start a temporary server with a custom extension:
 uri=$(pg_tmp -o "-c shared_preload_libraries=$PWD/auth_hook")
 psql $uri -c "SELECT 1"
 .Ed
+.Pp
+Start a temporary database that recycles WAL segments to reduce space
+.Bd -literal -offset indent
+pg_tmp -o "-c max_wal_size=48MB -c min_wal_size=32M"
+.Ed
 .Sh SEE ALSO
 .Xr pg_ctl 1
