@@ -1,5 +1,6 @@
 = Next Release: 3.2
 
+ - flattenjs: exit 0 if the input is empty
  - Use relative link in README
 
 = Release History

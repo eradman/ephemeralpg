@@ -8,7 +8,7 @@ require 'json'
 
 def usage
   $stderr.puts "usage: flattenjs < input.json"
-  exit(1)
+  exit 1
 end
 
 color = $stdout.isatty
@@ -20,6 +20,7 @@ while path = $stdin.gets
   json_in << path
 end
 
+exit if json_in.length <= 1
 h = JSON.parse(json_in)
 
 # from https://stackoverflow.com/a/10715242/1809872
