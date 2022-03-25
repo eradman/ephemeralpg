@@ -38,14 +38,6 @@ Start a temporary server with a custom extension:
     uri=$(pg_tmp -o "-c shared_preload_libraries=$PWD/auth_hook")
     psql $uri -c "SELECT 1"
 
-Man Page Examples for ddl_compare(1)
-------------------------------------
-
-Find the differences between a test instance and a schema definition
-
-    pg_dump -s $test_url > test.sql
-    ddl_compare -g roles.sql test.sql schema.sql
-
 News
 ----
 

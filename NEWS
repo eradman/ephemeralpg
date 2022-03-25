@@ -2,6 +2,7 @@
 
  - flattenjs: exit 0 if the input is empty
  - Use relative link in README
+ - Drop ddl_compare(1)
 
 = Release History
 
