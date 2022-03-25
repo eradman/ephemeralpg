@@ -7,7 +7,7 @@
 require 'json'
 
 def usage
-  $stderr.puts "usage: flattenjs < input.json"
+  warn 'usage: flattenjs < input.json'
   exit 1
 end
 
@@ -15,27 +15,25 @@ color = $stdout.isatty
 usage if ARGV.pop
 usage if $stdin.isatty
 
-json_in = ""
-while path = $stdin.gets
-  json_in << path
+json_in = ''
+while (line = $stdin.gets)
+  json_in << line
 end
 
 exit if json_in.length <= 1
 h = JSON.parse(json_in)
 
-# from https://stackoverflow.com/a/10715242/1809872
+# Based on https://stackoverflow.com/a/10715242/1809872
 module Enumerable
   def flatten_with_path(parent_prefix = nil)
     res = {}
-
-    self.each_with_index do |elem, i|
+    each_with_index do |elem, i|
       if elem.is_a?(Array)
         k, v = elem
       else
-        k, v = i, elem
+        k = i
+        v = elem
       end
-
-      # assign key name for result hash
       key = parent_prefix ? "#{parent_prefix},#{k}" : k
 
       if v.is_a? Enumerable
@@ -45,7 +43,6 @@ module Enumerable
         res[key] = v
       end
     end
-
     res
   end
 end
@@ -57,4 +54,3 @@ h.flatten_with_path.each do |path, value|
     puts "{#{path}} #{value}"
   end
 end
-

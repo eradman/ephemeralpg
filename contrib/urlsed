@@ -6,25 +6,25 @@
 
 require 'uri'
 
-$components = [ :scheme, :userinfo, :host, :port, :path, :query, :fragment ]
+@components = %i[scheme userinfo host port path query fragment]
 
 def usage
-  $stderr.puts "usage: urlsed [component=value ...] < url"
-  $stderr.puts "components: " + $components.join(" ")
-  exit(1)
+  warn 'usage: urlsed [component=value ...] < url'
+  warn "components: #{@components.join(' ')}"
+  exit 1
 end
 
 usage if $stdin.isatty
 
 uri = URI($stdin.gets.strip)
 
-ARGV.each { |arg|
+ARGV.each do |arg|
   k, v = arg.split('=', 2)
-  usage if !$components.include? k.to_sym
-  if k == 'port' and v.to_i > 0
-      uri.send(k+"=", v.to_i)
+  usage unless @components.include? k.to_sym
+  if k == 'port' && v.to_i.positive?
+    uri.send("#{k}=", v.to_i)
   else
-      uri.send(k+"=", v)
+    uri.send("#{k}=", v)
   end
-}
+end
 puts uri
