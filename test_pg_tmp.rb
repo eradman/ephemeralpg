@@ -56,7 +56,7 @@ try 'Run with missing Postgres binaries' do
   getopt_path = File.dirname `which getopt`.chomp
   cmd = './pg_tmp'
   out, err, status = Open3.capture3({ 'PATH' => "/bin:#{getopt_path}" }, cmd)
-  err.sub!(/.+initdb/, 'initdb')
+  err.sub!(/.+initdb.+not found/, 'initdb: not found')
   eq err, "initdb: not found\n"
   eq out.empty?, true
   eq status.success?, false

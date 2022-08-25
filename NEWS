@@ -1,3 +1,7 @@
+= Next Release: 3.3
+
+ - Adapt tests to zsh
+
 = Release History
 
 == 3.2: April 13, 2022
