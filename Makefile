@@ -1,3 +1,4 @@
+RUBY = ruby
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
 RELEASE = 3.3
@@ -13,8 +14,8 @@ getsocket: getsocket.c
 	${CC} ${CFLAGS} ${CPPFLAGS} ${EXTRA_SRC} ${LDFLAGS} $< -o $@
 
 test: ${TARGETS}
-	@ruby ./test_getsocket.rb
-	@ruby ./test_pg_tmp.rb
+	@${RUBY} ./test_getsocket.rb
+	@${RUBY} ./test_pg_tmp.rb
 
 selftest: pg_tmp
 	@/bin/echo "Using `pg_ctl --version`"
