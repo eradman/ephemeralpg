@@ -20,11 +20,6 @@ Or to specify a specific installation location
 
     PREFIX=$HOME/local make install
 
-Source Installation - Solaris
------------------------------
-
-    LDFLAGS='-lsocket -lnsl' make install
-
 Man Page Examples for pg_tmp(1)
 -------------------------------
 
