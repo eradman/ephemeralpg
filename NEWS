@@ -1,8 +1,9 @@
-= Next Release: 3.3
+= Release History
+
+== 3.3: November 17, 2023
 
  - Adapt tests to zsh
-
-= Release History
+ - Use ${RUBY} instead of 'ruby' for test runner
 
 == 3.2: April 13, 2022
 

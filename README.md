@@ -36,5 +36,6 @@ Start a temporary server with a custom extension:
 News
 ----
 
-A release history as well as features in the upcoming release are covered in the
-[NEWS](NEWS) file.
+Notification of new releases are provided by an
+[Atom feed](https://github.com/eradman/ephemeralpg/releases.atom),
+and release history is covered in the [NEWS](NEWS) file.

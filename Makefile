@@ -4,7 +4,7 @@ MANPREFIX ?= ${PREFIX}/man
 RELEASE = 3.3
 TARGETS = pg_tmp getsocket
 
-all: versioncheck ${TARGETS}
+all: ${TARGETS}
 
 pg_tmp: pg_tmp.sh
 	sed -e 's/$${release}/${RELEASE}/' $< > $@
@@ -35,10 +35,7 @@ uninstall:
 	rm ${DESTDIR}${MANPREFIX}/man1/getsocket.1
 	rm ${DESTDIR}${MANPREFIX}/man1/pg_tmp.1
 
-versioncheck:
-	@head -n3 NEWS | egrep -q "^= Next Release: ${RELEASE}|^== ${RELEASE}: "
-
 clean:
 	rm -f ${TARGETS}
 
-.PHONY: all clean install uninstall test selftest versioncheck
+.PHONY: all clean install uninstall test selftest
