@@ -23,7 +23,6 @@ usage() {
 trap 'printf "$0: exit code $? on line $LINENO\n" >&2; exit 1' ERR \
 	2> /dev/null || exec bash $0 "$@"
 trap '' HUP
-set +o posix
 
 USER_OPTS=""
 >/dev/null getopt ktp:w:o:d: "$@" || usage
@@ -98,7 +97,7 @@ start)
 		createdb -E UNICODE test > /dev/null 2>&1 && break
 	done
 	[ $? != 0 ] && { >&2 tail $LOGFILE; exit 1; }
-	[ -t 1 ] && echo "$url" || echo -n "$url"
+	[ -t 1 ] && echo "$url" || printf "%s" "$url"
 	;;
 stop)
 	[ -O $TD/$PGVER/postgresql.conf ] || {

@@ -4,6 +4,7 @@
 
  - Adapt tests to zsh
  - Use ${RUBY} instead of 'ruby' for test runner
+ - Avoid using 'set +o posix' for compatibility with Alpine
 
 == 3.2: April 13, 2022
 
