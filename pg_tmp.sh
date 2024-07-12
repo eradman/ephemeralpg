@@ -40,7 +40,7 @@ while [ $# -gt 0 ]; do
 done
 
 initdb -V > /dev/null || exit 1
-PGVER=$(pg_ctl -V | awk '{print $NF}')
+PGVER=$(pg_ctl -V | awk '{print $3}')
 
 [ -n "$LISTENTO" ] && [ -z "$PGPORT" ] && {
 	PGPORT="$(getsocket)"
