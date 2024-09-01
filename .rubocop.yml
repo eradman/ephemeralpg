@@ -1,0 +1,14 @@
+AllCops:
+  NewCops: enable
+
+Style/HashSyntax:
+  EnforcedStyle: no_mixed_keys
+
+Metrics/MethodLength:
+  Max: 20
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/FetchEnvVar:
+  Enabled: false
