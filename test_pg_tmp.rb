@@ -184,7 +184,7 @@ try 'Stop a running instance' do
   eq out.empty?, true
   eq err, <<~COMMANDS
     sleep 5
-    psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname='test';
+    psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname IS NOT NULL AND state IS NOT NULL;
     pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/11.2 stop
     sleep 1
     rm -r #{@systmp}/ephemeralpg.XXXXXX
@@ -199,7 +199,7 @@ try 'Stop a running instance and remove tmp datadir' do
   eq out.empty?, true
   eq err, <<~COMMANDS
     sleep 60
-    psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname='test';
+    psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname IS NOT NULL AND state IS NOT NULL;
     pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/11.2 stop
     sleep 1
     rm -r #{@systmp}/ephemeralpg.XXXXXX

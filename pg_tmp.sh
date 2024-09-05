@@ -107,7 +107,9 @@ stop)
 	[ "$KEEP" == "" ] && trap "rm -r $TD" EXIT
 	PGHOST=$TD
 	export PGHOST PGPORT
-	q="SELECT count(*) FROM pg_stat_activity WHERE datname='test';"
+	q="SELECT count(*) FROM pg_stat_activity
+		WHERE datname IS NOT NULL
+		AND state IS NOT NULL;"
 	until [ "${count:-2}" -lt "2" ]; do
 		sleep ${TIMEOUT:-5}
 		count=$(psql test --no-psqlrc -At -c "$q" || echo 0)
