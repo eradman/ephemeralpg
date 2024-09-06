@@ -84,7 +84,7 @@ start)
 	fi
 	[ -n "$PGPORT" ] && OPTS="-c listen_addresses='*' -c port=$PGPORT"
 	LOGFILE="$TD/$PGVER/postgres.log"
-	pg_ctl -W -o "$OPTS $USER_OPTS" -s -D $TD/$PGVER -l $LOGFILE start
+	LC_ALL=${LC_ALL:-C} pg_ctl -W -o "$OPTS $USER_OPTS" -s -D $TD/$PGVER -l $LOGFILE start
 	PGHOST=$TD
 	export PGPORT PGHOST
 	if [ -n "$PGPORT" ]; then

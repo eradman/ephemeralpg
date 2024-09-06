@@ -13,7 +13,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd October 1, 2020
+.Dd September 5, 2024
 .Dt PG_TMP 1
 .Os
 .Sh NAME
@@ -76,6 +76,10 @@ will not initialize a new database for subsequent invocations use.
 .It Ev TMPDIR
 base directory in which to create and run the ephemeral instances of
 .Xr postgres 1
+.It Ev LC_ALL
+Set locale to ensure proper startup on Mac OS.
+If not set the default is
+.Ql C .
 .El
 .Sh EXAMPLES
 Create a temporary database and run a query:
