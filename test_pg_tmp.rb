@@ -30,7 +30,7 @@ end
 ENV['LANG'] = 'C'
 @altpath = "stubs:#{ENV['PATH']}"
 @systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
-FileUtils.mkdir_p "#{@systmp}/ephemeralpg.XXXXXX/11.2"
+FileUtils.mkdir_p "#{@systmp}/ephemeralpg.XXXXXX/16.3"
 FileUtils.touch "#{@systmp}/ephemeralpg.XXXXXX/NEW"
 at_exit { FileUtils.rm_r @systmp }
 
@@ -71,7 +71,7 @@ try 'Create a new database on disk' do
   out.sub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq out, "#{@systmp}/ephemeralpg.012345\n"
   eq err, <<~COMMANDS
-    initdb --nosync -D #{@systmp}/ephemeralpg.012345/11.2 -E UNICODE -A trust
+    initdb --nosync -D #{@systmp}/ephemeralpg.012345/16.3 -E UNICODE -A trust
   COMMANDS
   eq status.success?, true
 end
@@ -84,7 +84,7 @@ try 'Start a new instance with a specified datadir and multiple options' do
   eq out, 'postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX'
   eq err, <<~COMMANDS
     pg_ctl -W -o " -c track_commit_timestamp=true -c shared_buffers=12MB"\
-     -s -D #{@systmp}/ephemeralpg.XXXXXX/11.2 -l #{@systmp}/ephemeralpg.XXXXXX/11.2/postgres.log start
+     -s -D #{@systmp}/ephemeralpg.XXXXXX/16.3 -l #{@systmp}/ephemeralpg.XXXXXX/16.3/postgres.log start
     sleep 0.1
   COMMANDS
   eq status.success?, true
@@ -103,7 +103,7 @@ try 'Start a new instance on a TCP port using a specified datadir' do
   eq out, 'postgresql://user11@127.0.0.1:55550/test'
   eq err, <<~COMMANDS
     pg_ctl -W -o "-c listen_addresses='*' -c port=55550 "\
-     -s -D #{@systmp}/ephemeralpg.XXXXXX/11.2 -l #{@systmp}/ephemeralpg.XXXXXX/11.2/postgres.log start
+     -s -D #{@systmp}/ephemeralpg.XXXXXX/16.3 -l #{@systmp}/ephemeralpg.XXXXXX/16.3/postgres.log start
     sleep 0.1
   COMMANDS
   eq status.success?, true
@@ -124,9 +124,9 @@ try 'Start a new instance without a pre-initialized datadir' do
   err.gsub!(/ephemeralpg\.[a-zA-Z0-9]{6}/, 'ephemeralpg.012345')
   eq out, 'postgresql:///test?host=%2Ftmp%2Fephemeralpg.012345'
   eq err, <<~COMMANDS
-    initdb --nosync -D #{@systmp}/ephemeralpg.012345/11.2 -E UNICODE -A trust
+    initdb --nosync -D #{@systmp}/ephemeralpg.012345/16.3 -E UNICODE -A trust
     rm #{@systmp}/ephemeralpg.012345/NEW
-    pg_ctl -W -o " " -s -D #{@systmp}/ephemeralpg.012345/11.2 -l #{@systmp}/ephemeralpg.012345/11.2/postgres.log start
+    pg_ctl -W -o " " -s -D #{@systmp}/ephemeralpg.012345/16.3 -l #{@systmp}/ephemeralpg.012345/16.3/postgres.log start
     sleep 0.1
   COMMANDS
   eq status.success?, true
@@ -147,7 +147,7 @@ try 'Start a new instance and leave server running' do
   eq out, 'postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX'
   eq err, <<~COMMANDS
     pg_ctl -W -o " "\
-     -s -D #{@systmp}/ephemeralpg.XXXXXX/11.2 -l #{@systmp}/ephemeralpg.XXXXXX/11.2/postgres.log start
+     -s -D #{@systmp}/ephemeralpg.XXXXXX/16.3 -l #{@systmp}/ephemeralpg.XXXXXX/16.3/postgres.log start
     sleep 0.1
   COMMANDS
   eq status.success?, true
@@ -165,7 +165,7 @@ try 'Start a new instance and keep the tmp datadir' do
   eq out, 'postgresql:///test?host=%2Ftmp%2Fephemeralpg.XXXXXX'
   eq err, <<~COMMANDS
     pg_ctl -W -o " "\
-     -s -D #{@systmp}/ephemeralpg.XXXXXX/11.2 -l #{@systmp}/ephemeralpg.XXXXXX/11.2/postgres.log start
+     -s -D #{@systmp}/ephemeralpg.XXXXXX/16.3 -l #{@systmp}/ephemeralpg.XXXXXX/16.3/postgres.log start
     sleep 0.1
   COMMANDS
   eq status.success?, true
@@ -178,14 +178,14 @@ try 'Start a new instance and keep the tmp datadir' do
 end
 
 try 'Stop a running instance' do
-  File.write "#{@systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ''
+  File.write "#{@systmp}/ephemeralpg.XXXXXX/16.3/postgresql.conf", ''
   cmd = "./pg_tmp stop -d #{@systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({ 'SYSTMP' => @systmp, 'PATH' => @altpath }, cmd)
   eq out.empty?, true
   eq err, <<~COMMANDS
     sleep 5
     psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname IS NOT NULL AND state IS NOT NULL;
-    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/11.2 stop
+    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/16.3 stop
     sleep 1
     rm -r #{@systmp}/ephemeralpg.XXXXXX
   COMMANDS
@@ -193,49 +193,49 @@ try 'Stop a running instance' do
 end
 
 try 'Stop a running instance and remove tmp datadir' do
-  File.write "#{@systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ''
+  File.write "#{@systmp}/ephemeralpg.XXXXXX/16.3/postgresql.conf", ''
   cmd = "./pg_tmp stop -d #{@systmp}/ephemeralpg.XXXXXX -w 60"
   out, err, status = Open3.capture3({ 'SYSTMP' => @systmp, 'PATH' => @altpath }, cmd)
   eq out.empty?, true
   eq err, <<~COMMANDS
     sleep 60
     psql test --no-psqlrc -At -c SELECT count(*) FROM pg_stat_activity WHERE datname IS NOT NULL AND state IS NOT NULL;
-    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/11.2 stop
+    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/16.3 stop
     sleep 1
     rm -r #{@systmp}/ephemeralpg.XXXXXX
   COMMANDS
   eq status.success?, true
-  File.unlink "#{@systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf"
+  File.unlink "#{@systmp}/ephemeralpg.XXXXXX/16.3/postgresql.conf"
 end
 
 try 'Stop a running instance if query fails' do
-  File.write "#{@systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ''
+  File.write "#{@systmp}/ephemeralpg.XXXXXX/16.3/postgresql.conf", ''
   File.write "#{@systmp}/ephemeralpg.XXXXXX/STOP", ''
   cmd = "./pg_tmp stop -d #{@systmp}/ephemeralpg.XXXXXX"
   out, err, status = Open3.capture3({ 'PATH' => @altpath }, cmd)
   eq out.empty?, true
   eq err.sub(/on line \d+/, 'on line 100'), <<~COMMANDS
     sleep 5
-    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/11.2 stop
+    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/16.3 stop
     sleep 1
     rm -r #{@systmp}/ephemeralpg.XXXXXX
   COMMANDS
   eq status.success?, true
-  File.unlink "#{@systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf"
+  File.unlink "#{@systmp}/ephemeralpg.XXXXXX/16.3/postgresql.conf"
 end
 
 try 'Stop a running instance and keep tmp datadir' do
-  File.write "#{@systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf", ''
+  File.write "#{@systmp}/ephemeralpg.XXXXXX/16.3/postgresql.conf", ''
   cmd = "./pg_tmp stop -k -d #{@systmp}/ephemeralpg.XXXXXX -w 60"
   out, err, status = Open3.capture3({ 'SYSTMP' => @systmp, 'PATH' => @altpath }, cmd)
   eq out.empty?, true
   eq err, <<~COMMANDS
     sleep 60
-    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/11.2 stop
+    pg_ctl -W -D #{@systmp}/ephemeralpg.XXXXXX/16.3 stop
     sleep 1
   COMMANDS
   eq status.success?, true
-  File.unlink "#{@systmp}/ephemeralpg.XXXXXX/11.2/postgresql.conf"
+  File.unlink "#{@systmp}/ephemeralpg.XXXXXX/16.3/postgresql.conf"
 end
 
 puts "#{@tests} tests PASSED"
