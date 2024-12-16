@@ -1,4 +1,5 @@
-RUBY = ruby
+RUBY ?= ruby
+RUBOCOP ?= rubocop
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
 RELEASE = 3.3
@@ -35,7 +36,10 @@ uninstall:
 	rm ${DESTDIR}${MANPREFIX}/man1/getsocket.1
 	rm ${DESTDIR}${MANPREFIX}/man1/pg_tmp.1
 
+format:
+	${RUBOCOP} -A
+
 clean:
 	rm -f ${TARGETS}
 
-.PHONY: all clean install uninstall test selftest
+.PHONY: all clean install format uninstall test selftest
