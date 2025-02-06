@@ -1,5 +1,12 @@
 = Release History
 
+== 3.4: February 6, 2025
+
+ - Set LC_ALL to ensure proper startup on Mac OS
+ - Keep server up for any normal client connection
+ - Add Gemfile with test dependencies
+ - Fix Ubuntu by using $3 for from version string
+
 == 3.3: November 17, 2023
 
  - Adapt tests to zsh

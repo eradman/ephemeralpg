@@ -2,7 +2,7 @@ RUBY ?= ruby
 RUBOCOP ?= rubocop
 PREFIX ?= /usr/local
 MANPREFIX ?= ${PREFIX}/man
-RELEASE = 3.3
+RELEASE = 3.4
 TARGETS = pg_tmp getsocket
 
 all: ${TARGETS}
