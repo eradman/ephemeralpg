@@ -42,4 +42,7 @@ format:
 clean:
 	rm -f ${TARGETS}
 
-.PHONY: all clean install format uninstall test selftest
+distclean:
+	rm -f *.lock
+
+.PHONY: all clean distclean install format uninstall test selftest

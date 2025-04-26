@@ -13,7 +13,7 @@ def try(descr)
   @tests += 1
   @test_description = descr
   yield
-  delta = format('%.3f', (Time.now - start))
+  delta = format('%.3f', Time.now - start)
   # highlight slow tests
   delta = "\e[7m#{delta}\e[27m" if (Time.now - start) > 0.1
   puts "#{delta}: #{descr}"

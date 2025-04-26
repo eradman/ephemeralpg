@@ -14,9 +14,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
 
 #include <netdb.h>
 #include <stdio.h>
@@ -41,8 +41,8 @@ main(int argc, char *argv[]) {
 	addr.sin_port = htons(0);
 
 	sock = socket(AF_INET, SOCK_STREAM, 0);
-	bind(sock, (struct sockaddr*) &addr, sizeof(addr));
-	getsockname(sock, (struct sockaddr*) &addr, &addrlen);
+	bind(sock, (struct sockaddr *) &addr, sizeof(addr));
+	getsockname(sock, (struct sockaddr *) &addr, &addrlen);
 	port = ntohs(addr.sin_port);
 	close(sock);
 
