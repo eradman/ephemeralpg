@@ -18,6 +18,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include <err.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,7 +41,8 @@ main(int argc, char *argv[]) {
 	addr.sin_addr.s_addr = inet_addr("0.0.0.0");
 	addr.sin_port = htons(0);
 
-	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		err(1, "socket");
 	bind(sock, (struct sockaddr *) &addr, sizeof(addr));
 	getsockname(sock, (struct sockaddr *) &addr, &addrlen);
 	port = ntohs(addr.sin_port);
