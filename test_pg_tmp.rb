@@ -27,12 +27,23 @@ end
 
 # Setup
 
+File.open 'stubs/getsocket', 'w', 0o755 do |f|
+  f.write <<~SH
+    #!/bin/sh
+    echo "55550"
+  SH
+end
+
 ENV['LANG'] = 'C'
 @altpath = "stubs:#{ENV['PATH']}"
 @systmp = `mktemp -d /tmp/ephemeralpg-test.XXXXXX`.chomp
 FileUtils.mkdir_p "#{@systmp}/ephemeralpg.XXXXXX/16.3"
 FileUtils.touch "#{@systmp}/ephemeralpg.XXXXXX/NEW"
-at_exit { FileUtils.rm_r @systmp }
+
+at_exit do
+  FileUtils.rm_r @systmp
+  FileUtils.rm 'stubs/getsocket'
+end
 
 puts "\e[32m---\e[39m"
 
