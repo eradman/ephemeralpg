@@ -20,10 +20,13 @@ usage() {
 	exit 1
 }
 
+initdb -V > /dev/null || exit 1
+
 trap 'printf "$0: exit code $? on line $LINENO\n" >&2; exit 1' ERR \
 	2> /dev/null || exec bash $0 "$@"
 trap '' HUP
 
+PGVER=$(pg_ctl -V | awk '{print $3}')
 USER_OPTS=""
 >/dev/null getopt ktp:w:o:d: "$@" || usage
 while [ $# -gt 0 ]; do
@@ -38,9 +41,6 @@ while [ $# -gt 0 ]; do
 	esac
 	shift
 done
-
-initdb -V > /dev/null || exit 1
-PGVER=$(pg_ctl -V | awk '{print $3}')
 
 [ -n "$LISTENTO" ] && [ -z "$PGPORT" ] && {
 	PGPORT="$(getsocket)"
