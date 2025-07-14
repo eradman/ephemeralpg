@@ -1,2 +1,3 @@
 #!/bin/sh
->&2 echo $(basename $0) $*
+
+echo >&2 $(basename $0) $*

@@ -38,6 +38,7 @@ uninstall:
 
 format:
 	${RUBOCOP} -A
+	shfmt -ci -sr -w -l *.sh stubs/*
 
 clean:
 	rm -f ${TARGETS}

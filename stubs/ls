@@ -1,3 +1,4 @@
 #!/bin/sh
+
 echo /tmp/ephemeralpg.333333/16.3 /tmp/ephemeralpg.444444/16.3
->&2 echo $(basename $0) $*
+echo >&2 $(basename $0) $*

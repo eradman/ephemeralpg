@@ -1,15 +1,18 @@
 #!/bin/sh
 
 case "$1" in
-	-V) echo "pg_ctl (PostgreSQL) 16.3"; exit 0 ;;
+	-V)
+		echo "pg_ctl (PostgreSQL) 16.3"
+		exit 0
+		;;
 esac
 
 # Print each argument with quotes if it would otherwise be split by a space
->&2 printf $(basename $0)
-one_arg () { [ $# -eq 1 ]; }
+printf >&2 $(basename $0)
+one_arg() { [ $# -eq 1 ]; }
 while [ $# -gt 0 ]; do
 	one_arg $1
-	[ $? -eq 0 ] && >&2 printf " $1" || >&2 printf " \"$1\""
+	[ $? -eq 0 ] && printf >&2 " $1" || printf >&2 " \"$1\""
 	shift
 done
->&2 echo
+echo >&2
