@@ -16,7 +16,23 @@
 
 usage() {
 	echo >&2 "release: ${release}"
-	echo >&2 "usage: pg_tmp [-k] [-t [-p port]] [-w timeout] [-o extra-options] [-d datadir]"
+	echo >&2 "usage: pg_tmp [-kt] [-d datadir] [-o pgoptions] [-p port] [-w timeout]"
+	if [ -z "$1" ]; then
+		echo >&2 "hint: use -h to display option summary"
+		exit 1
+	fi
+
+	cat <<- HELP
+		summary:
+		    -k            Do not clean up data directory
+		    -t            Use TCP instead of local socket
+		    -d datadir    Specify directory to initialize
+		    -o pgoptions  Run-time parameters for server to use
+		    -p port       Port to listen on
+		    -w timeout    Delay in cleaning up data directory
+		docs:
+		    man pg_tmp
+	HELP
 	exit 1
 }
 
@@ -28,25 +44,26 @@ trap '' HUP
 
 PGVER=$(pg_ctl -V | awk '{print $3}')
 USER_OPTS=""
-getopt > /dev/null ktp:w:o:d: "$@" || usage
+[ "x$1" == "x-h" ] && usage $1
+getopt > /dev/null hktp:w:o:d: "$@" || usage
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-k) KEEP=$1 ;;
 		-t) LISTENTO="127.0.0.1" ;;
-		-p)
-			PGPORT="$2"
-			shift
-			;;
-		-w)
-			TIMEOUT="$2"
+		-d)
+			TD="$2"
 			shift
 			;;
 		-o)
 			USER_OPTS="$2"
 			shift
 			;;
-		-d)
-			TD="$2"
+		-p)
+			PGPORT="$2"
+			shift
+			;;
+		-w)
+			TIMEOUT="$2"
 			shift
 			;;
 		*) CMD=$1 ;;
