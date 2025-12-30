@@ -49,17 +49,25 @@ puts "\e[32m---\e[39m"
 
 # Option Parsing
 
+try 'Display option summary' do
+  cmd = './pg_tmp -h'
+  out, err, status = Open3.capture3(cmd)
+  eq err.scan('usage:').length, 1
+  eq out.scan('summary:').length, 1
+  eq status.exitstatus, 1
+end
+
 try 'Catch unknown options' do
   cmd = './pg_tmp -t -z'
-  out, _, status = Open3.capture3(cmd)
+  out, err, status = Open3.capture3(cmd)
+  eq err.scan('usage:').length, 1
   eq out.empty?, true
   eq status.exitstatus, 1
 end
 
 try 'Bogus arguments mixed with valid positional' do
   cmd = './pg_tmp -t -z initdb -w 20'
-  out, _, status = Open3.capture3(cmd)
-  eq out.empty?, true
+  _, _, status = Open3.capture3(cmd)
   eq status.exitstatus, 1
 end
 

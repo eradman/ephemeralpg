@@ -21,11 +21,11 @@
 .Nd quickly spin up temporary PostgreSQL database
 .Sh SYNOPSIS
 .Nm pg_tmp
-.Op Fl k
-.Op Fl t Op Fl p Ar port
-.Op Fl w Ar timeout
-.Op Fl o Ar extra-options
+.Op Fl kt
 .Op Fl d Ar datadir
+.Op Fl o Ar pgoptions
+.Op Fl p Ar port
+.Op Fl w Ar timeout
 .Sh DESCRIPTION
 The
 .Nm
@@ -39,14 +39,6 @@ The arguments are as follows:
 .Bl -tag -width Ds
 .It Fl k
 Keep the temporary directory after the server is shut down.
-.It Fl w
-Shut down and remove the database after the specified
-.Ar timeout .
-If one or more clients are still connected then
-.Nm
-sleeps and retries again after the same interval.
-A value of 0 will leave the server running indefinitely.
-The default is 60 seconds.
 .It Fl t
 Use a TCP port selected by
 .Xr getsocket 1 .
@@ -54,12 +46,6 @@ A port may be selected using the
 .Fl p
 flag.
 Otherwise the path to a Unix socket is returned.
-.It Fl o
-Specifies extra-options to be passed directly to the
-.Xr postgres 1
-binary.
-These options should usually be surrounded by quotes to ensure that they are
-passed through as a group.
 .It Fl d
 Specify the temporary directory to use.
 May be used with the optional arguments
@@ -70,16 +56,32 @@ and is required for
 If this option is used
 .Nm
 will not initialize a new database for subsequent invocations use.
+.It Fl o
+Specifies options to be passed directly to the
+.Xr postgres 1
+server.
+These options should usually be surrounded by quotes to ensure that they are
+passed through as a group.
+.It Fl p
+TCP port to listen on.
+.It Fl w
+Shut down and remove the database after the specified
+.Ar timeout .
+If one or more clients are still connected then
+.Nm
+sleeps and retries again after the same interval.
+A value of 0 will leave the server running indefinitely.
+The default is 60 seconds.
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width TMPDIR
-.It Ev TMPDIR
-base directory in which to create and run the ephemeral instances of
-.Xr postgres 1
 .It Ev LC_ALL
 Set locale to ensure proper startup on Mac OS.
 If not set the default is
 .Ql C .
+.It Ev TMPDIR
+base directory in which to create and run the ephemeral instances of
+.Xr postgres 1
 .El
 .Sh EXAMPLES
 Create a temporary database and run a query:
